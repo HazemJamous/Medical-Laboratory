@@ -11,7 +11,8 @@ Widget CustomButton({
   TextStyle? textStyle,
   IconData? icon,
 }) {
-  final Color effectiveBackground = background ?? const Color(0xFF4CAF50); // أخضر متناسق
+  final Color effectiveBackground =
+      background ?? const Color(0xFF4CAF50); // أخضر متناسق
 
   return SizedBox(
     width: width,
@@ -37,7 +38,8 @@ Widget CustomButton({
           ],
           Text(
             text,
-            style: textStyle ??
+            style:
+                textStyle ??
                 TextStyle(
                   color: textColor,
                   fontSize: 16,
