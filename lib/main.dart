@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
-import 'package:midical_laboratory/features/pages/auth/register/register_page.dart';
-import 'package:midical_laboratory/test._file.dart';
+import 'package:midical_laboratory/labs_page.dart';
 
 void main() {
   runApp(const MidicalLaboratoryApp());
@@ -20,7 +19,7 @@ class MidicalLaboratoryApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
 
-      home: RegisterPageTest(),
+      home: LabsPage(),
     );
   }
 }
