@@ -54,14 +54,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  void _onRegister() {
-    if (_formKey.currentState!.validate()) {
-      // مسحح: _formKey.currentState!.save();
-      // هنا استدعِ تابع التسجيل الخاص بك
-      debugPrint("All fields valid, gender=$_gender, ready to register");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final thirdWidth = MediaQuery.of(context).size.width / 3;
@@ -104,7 +96,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-
                             const SizedBox(height: 24),
                             Row(
                               children: [
@@ -133,14 +124,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
-
-                            // الجنس والتاريخ في صف واحد
                             Row(
-                              // mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Radio بين Male / Female
                                 Expanded(
                                   child: InputDecorator(
                                     decoration: const InputDecoration(
@@ -151,7 +137,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        // خيار Male
                                         Row(
                                           children: [
                                             Radio<String>(
@@ -164,11 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             const Text('Male'),
                                           ],
                                         ),
-
-                                        const SizedBox(
-                                          width: 32,
-                                        ), // مسافة بين الخيارين
-                                        // خيار Female
+                                        const SizedBox(width: 32),
                                         Row(
                                           children: [
                                             Radio<String>(
@@ -197,108 +178,92 @@ class _RegisterPageState extends State<RegisterPage> {
                                     validator: (v) => (v?.isEmpty ?? true)
                                         ? "Select date"
                                         : null,
-                                    // عند الضغط يُفتح DatePicker
                                     suffixIcon: Icons.arrow_drop_down,
-
                                     onTap: _pickDate,
                                   ),
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
-
-                            // حقول الهاتف والإيميل
                             NameFormField(
                               label: "Phone",
                               controller: _phoneController,
                               type: TextInputType.phone,
                               prefixIcon: Icons.phone,
                               validator: (v) {
-                                if (v == null || v.isEmpty) {
+                                if (v == null || v.isEmpty)
                                   return "Enter phone";
-                                }
                                 final valid = RegExp(r"^09\d{8}$").hasMatch(v);
                                 return valid ? null : "Invalid phone";
                               },
                             ),
-
                             const SizedBox(height: 16),
-
                             NameFormField(
                               label: "Email",
                               controller: _emailController,
                               type: TextInputType.emailAddress,
                               prefixIcon: Icons.email,
                               validator: (v) {
-                                if (v == null || v.isEmpty) {
+                                if (v == null || v.isEmpty)
                                   return "Enter email";
-                                }
                                 final valid = RegExp(
                                   r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$",
                                 ).hasMatch(v);
                                 return valid ? null : "Invalid email";
                               },
                             ),
-
                             const SizedBox(height: 16),
-
-                            // حقل كلمة المرور
                             PasswordFormField(
                               controller: _passwordController,
                               label: "Password",
                               validator: (v) {
-                                if (v == null || v.isEmpty) {
+                                if (v == null || v.isEmpty)
                                   return "Enter password";
-                                }
                                 return v.length >= 6
                                     ? null
                                     : "At least 6 characters";
                               },
                             ),
-
                             const SizedBox(height: 16),
-
                             PasswordFormField(
                               controller: _confirmPasswordController,
                               label: "Confirm Password",
                               validator: (v) {
-                                if (v == null || v.isEmpty) {
+                                if (v == null || v.isEmpty)
                                   return "Confirm your password";
-                                }
-                                if (v != _passwordController.text) {
+                                if (v != _passwordController.text)
                                   return "Passwords do not match";
-                                }
                                 return null;
                               },
                             ),
-
                             const SizedBox(height: 24),
-
                             BlocBuilder<RegisterCubit, RegisterState>(
                               builder: (context, state) {
-                                if (state is RegisterSuccessState) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text("تم إنشاء الحساب بنجاح"),
-                                      backgroundColor: AppColors.accentDark,
-                                    ),
-                                  );
-                                  dispose();
-                                  Navigator.pop(context);
-                                } else if (state is RegisterFailureState) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(state.errorMessege),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                } else if (state is LoadingState) {
-                                  return ElevatedButton(
-                                    onPressed: () {},
-                                    child: CircularProgressIndicator(),
-                                  );
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                  _,
+                                ) {
+                                  if (state is RegisterSuccessState) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text("تم إنشاء الحساب بنجاح"),
+                                        backgroundColor: AppColors.accentDark,
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  } else if (state is RegisterFailureState) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(state.errorMessege),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                });
+
+                                if (state is LoadingState) {
+                                  return const CircularProgressIndicator();
                                 }
+
                                 return CustomButton(
                                   text: "Register",
                                   width: thirdWidth,
@@ -308,7 +273,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         context,
                                       ).register(
                                         RegisterRequestModel(
-                                          firstName: _emailController.text,
+                                          firstName: _firstNameController.text,
                                           lastName: _lastNameController.text,
                                           dob: _dobController.text,
                                           gender: _gender!,
@@ -319,9 +284,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                           passwordConfirmation:
                                               _confirmPasswordController.text,
                                         ),
-                                      );
-                                      debugPrint(
-                                        "All fields valid, gender=$_gender, ready to register",
                                       );
                                     }
                                   },

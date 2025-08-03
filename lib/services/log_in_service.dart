@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/constant/app_const.dart';
 import 'package:midical_laboratory/models/login_request_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogInService {
   static Future<String> login(LogInRequestModel user) async {
@@ -12,6 +13,9 @@ class LogInService {
       );
       if (response.statusCode == 200) {
         print(response.data["message"]);
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString("token", response.data["data"]["token"]);
         return response.data["data"]["token"];
       } else {
         print(response.statusCode);

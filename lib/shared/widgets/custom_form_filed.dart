@@ -44,7 +44,7 @@ class NameFormField extends StatelessWidget {
           labelStyle: TextStyle(color: Colors.grey.shade600),
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           filled: true,
-          fillColor: Colors.green.shade100,
+          fillColor: AppColors.accentLight,
           prefixIcon: prefixIcon != null
               ? Icon(prefixIcon, color: Colors.grey.shade600)
               : null,
@@ -61,7 +61,7 @@ class NameFormField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.green, width: 2),
+            borderSide: BorderSide(color: AppColors.buttonPrimary, width: 2),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),

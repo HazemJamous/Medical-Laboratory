@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:midical_laboratory/core/constant/app_colors.dart';
 
 class PasswordFormField extends StatefulWidget {
   final TextEditingController controller;
@@ -39,7 +40,7 @@ class _PasswordFormFieldState extends State<PasswordFormField> {
 
         textDirection: Directionality.of(context),
         decoration: InputDecoration(
-          fillColor: Colors.green.shade100,
+          fillColor: AppColors.accentLight,
 
           prefixIcon: Icon(Icons.password),
           hintStyle: TextStyle(color: Colors.blueGrey[600]),

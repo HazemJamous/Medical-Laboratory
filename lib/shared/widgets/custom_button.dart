@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:midical_laboratory/core/constant/app_colors.dart';
 
 Widget CustomButton({
   double radius = 12,
@@ -12,7 +13,7 @@ Widget CustomButton({
   IconData? icon,
 }) {
   final Color effectiveBackground =
-      background ?? const Color(0xFF4CAF50); // أخضر متناسق
+      background ?? AppColors.buttonPrimary; // أخضر متناسق
 
   return SizedBox(
     width: width,

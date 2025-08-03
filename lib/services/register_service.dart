@@ -16,8 +16,10 @@ class RegisterService {
           "password_confirmation": user.password,
           "phone": user.phone,
           "gender": user.gender,
-          "dob": user.dob,
-          "Health_Problems": "no smoking",
+
+          "dob": "2002-03-03",
+          //  user.dob,
+          "Health_Problems": "smoking",
         },
       );
       if (response.statusCode == 200) {
@@ -30,6 +32,7 @@ class RegisterService {
       }
     } catch (e) {
       print(e.toString());
+      print("in catch");
       return "no token";
     }
   }
