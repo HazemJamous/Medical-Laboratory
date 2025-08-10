@@ -13,7 +13,7 @@ class AdvertismentCubit extends Cubit<AdvertismentState> {
 
   List<AdvertismentModel> advertService = [];
 
-  Future getAdvertismentCubit() async {
+  Future getAdvertismentCubit() async { 
     print("before loading");
     emit(AdvertismentLoadingState());
     print("before get");

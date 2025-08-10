@@ -5,7 +5,7 @@ import 'package:midical_laboratory/log_print_interceptor.dart';
 import 'package:midical_laboratory/models/filter_options.dart';
 import 'package:midical_laboratory/models/lap_information_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+  
 class LabSearchService {
   static Future<List<LabInformationModel>> getAllLab() async {
     Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);

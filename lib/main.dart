@@ -4,6 +4,8 @@ import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart'
 
 import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
 import 'package:midical_laboratory/features/pages/basic_page.dart';
+import 'package:midical_laboratory/features/pages/evaluation_page/evaluation_page.dart';
+import 'package:midical_laboratory/features/pages/home/home_page.dart';
 
 void main() {
   runApp(
