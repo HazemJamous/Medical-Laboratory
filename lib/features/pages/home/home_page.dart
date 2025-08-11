@@ -54,7 +54,7 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildUpcomingAppointmentCard(),
+                    buildUpcomingAppointmentCard(),
                     const SizedBox(height: 20),
                     NewAppointmentButton(
                       onPressed: () {
@@ -95,7 +95,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingAppointmentCard() {
+  Widget buildUpcomingAppointmentCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(

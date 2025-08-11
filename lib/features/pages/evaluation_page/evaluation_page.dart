@@ -69,7 +69,7 @@ class ReviewsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // اسم المريض
+                     
                       Row(
                         children: [
                           CircleAvatar(
@@ -96,7 +96,7 @@ class ReviewsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
 
-                      // التقييم بالنجوم
+                     
                       RatingBarIndicator(
                         rating: eval.rate,
                         itemBuilder: (context, _) =>
@@ -105,7 +105,7 @@ class ReviewsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
 
-                      // التعليق
+                     
                       Text(
                         eval.review.toString(),
                         style: TextStyle(color: Colors.grey[800], fontSize: 14),

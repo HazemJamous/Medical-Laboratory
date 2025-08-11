@@ -4,8 +4,10 @@ import 'package:midical_laboratory/core/constant/app_colors.dart';
 class NewAppointmentButton extends StatefulWidget {
   final VoidCallback onPressed;
 
-  const NewAppointmentButton({Key? key, required this.onPressed})
-    : super(key: key);
+  const NewAppointmentButton({
+    Key? key,
+    required this.onPressed,
+  }) : super(key: key);
 
   @override
   _NewAppointmentButtonState createState() => _NewAppointmentButtonState();
@@ -19,7 +21,6 @@ class _NewAppointmentButtonState extends State<NewAppointmentButton> {
     setState(() => _isPressed = false);
     widget.onPressed();
   }
-
   void _onTapCancel() => setState(() => _isPressed = false);
 
   @override
@@ -48,9 +49,7 @@ class _NewAppointmentButtonState extends State<NewAppointmentButton> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onPressed: () {
-              
-            }, 
+            onPressed: () {}, 
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith((states) {
                 if (states.contains(MaterialState.pressed)) {
@@ -58,21 +57,17 @@ class _NewAppointmentButtonState extends State<NewAppointmentButton> {
                 }
                 return AppColors.primary;
               }),
-              overlayColor: MaterialStateProperty.all(
-                Colors.white.withOpacity(0.2),
-              ),
+              overlayColor: MaterialStateProperty.all(Colors.white.withOpacity(0.2)),
               elevation: MaterialStateProperty.resolveWith((states) {
                 if (states.contains(MaterialState.pressed)) {
                   return 2.0;
                 }
                 return 8.0;
               }),
-              padding: MaterialStateProperty.all(
-                const EdgeInsets.symmetric(vertical: 16),
-              ),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
+              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 16)),
+              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              )),
             ),
           ),
         ),
