@@ -11,15 +11,17 @@ class LabSearchCubit extends Cubit<LabSearchState> {
   FilterOptions filterOptions = FilterOptions();
   late List<LabInformationModel> labInfo;
 
-  Future<void> getLabs(String query, FilterOptions filterOptions) async {
+  Future<void> getLabs(String? query, FilterOptions filterOptions) async {
     emit(LoadingState());
     try {
-      // if (query == null) {
-      labInfo = await LabSearchService.getAllLab();
-      // } else {
+      // if (query == null &&
+      //     filterOptions.isFavorite == false &&
+      //     filterOptions.rating == 0) {
+        labInfo = await LabSearchService.getAllLab();
+      // }
+      // else {
       //   labInfo = await LabSearchService.getLabWithFilter(query, filterOptions);
       // }
-
       emit(SuccessState(labInfo: labInfo));
     } catch (e) {
       emit(FailureState(errorMessege: e.toString()));

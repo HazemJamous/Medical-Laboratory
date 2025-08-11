@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:midical_laboratory/core/constant/app_colors.dart';
 
 import 'package:midical_laboratory/services/lab_search/lab_search_service.dart';
 
@@ -34,8 +35,7 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
             widget.isFavorite
                 ? Icons.favorite_outlined
                 : Icons.favorite_border_outlined,
-            // Icons.search_rounded,
-            color: Colors.redAccent,
+            color: AppColors.buttonPrimary,
             size: 20,
             weight: 20,
           ),

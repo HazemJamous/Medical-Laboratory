@@ -5,14 +5,12 @@ import 'package:midical_laboratory/log_print_interceptor.dart';
 import 'package:midical_laboratory/models/filter_options.dart';
 import 'package:midical_laboratory/models/lap_information_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-  
+
 class LabSearchService {
   static Future<List<LabInformationModel>> getAllLab() async {
     Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
-    print("object");
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString("token")!;
-    print("object");
     try {
       Response response = await dio.get(
         ApiLink.labSearchPatient,
@@ -55,7 +53,18 @@ class LabSearchService {
     Dio dio = Dio();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString("token")!;
-
+    String filter = '';
+    if (filterOptions.isFavorite == true) {
+      filter = "${filter}isfavorite=${filterOptions.isFavorite}";
+    }
+    if (filterOptions.rating != 0) {
+      if (filter == '') {
+        filter = "${filter}rating=${filterOptions.rating}";
+      } else {
+        filter = "${filter}&rating=${filterOptions.rating}";
+      }
+    }
+    if (query != null) {}
     try {
       Response response = await dio.get(
         "${ApiLink.baseUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}&subscriptions_status=${filterOptions.isSubscrip}&lab_name=${query}",
@@ -100,7 +109,7 @@ class LabSearchService {
     String token = sharedPreferences.getString("token")!;
     try {
       Response response = await dio.post(
-        "patientPutDeleteFavoriteLab/$id",
+        "${ApiLink.baseUrl}/patientPutDeleteFavoriteLab/$id",
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_state.dart';
@@ -111,8 +112,15 @@ class _LabsPageState extends State<LabsPage> {
                   );
                 } else if (state is FailureState) {
                   return const Center(child: Text("Check Internet"));
+                } else {
+                  context.read<LabSearchCubit>().getLabs(
+                    searchController.text.isNotEmpty
+                        ? searchController.text
+                        : null,
+                    filterOptions,
+                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
-                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),
@@ -149,7 +157,13 @@ void _showFilterOptions(BuildContext context, FilterOptions filterOpt) {
               value: filterOpt.isFavorite,
               onChanged: (v) => filterOpt.isFavorite = v,
             ),
-            // SwitchListTile(
+            const SizedBox(height: 16),
+            RatingBarIndicator(
+              rating: filterOpt.rating,
+              itemBuilder: (context, _) =>
+                  const Icon(Icons.star, color: Colors.amber),
+              itemSize: 24,
+            ), // SwitchListTile(
             //   title: const Text('المخابر المشترك فيها'),
             //   value: filterOpt.isSubscrip,
             //   onChanged: (v) => filterOpt.isSubscrip = 1 ,
@@ -162,6 +176,7 @@ void _showFilterOptions(BuildContext context, FilterOptions filterOpt) {
                   onPressed: () {
                     filterOpt.isFavorite = false;
                     filterOpt.isSubscrip = 0;
+                    filterOpt.rating = 0;
                     Navigator.pop(context);
                   },
                   child: const Text('مسح الفلترة'),

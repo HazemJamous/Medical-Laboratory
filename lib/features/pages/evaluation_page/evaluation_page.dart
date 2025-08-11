@@ -4,7 +4,6 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/all_evaluation/cubit/all_evaluation_cubit.dart';
 
-
 class ReviewsPage extends StatelessWidget {
   final int labId;
   ReviewsPage({required this.labId});
@@ -13,7 +12,7 @@ class ReviewsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AllEvaluationCubit(this.labId)..getAllEvaluationsById(),
+          AllEvaluationCubit(labId)..getAllEvaluationsById(),
       child: BlocBuilder<AllEvaluationCubit, AllEvaluationState>(
         builder: (context, state) {
           final evaluation_cubit = context.read<AllEvaluationCubit>();
@@ -69,7 +68,6 @@ class ReviewsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // اسم المريض
                       Row(
                         children: [
                           CircleAvatar(
@@ -95,8 +93,6 @@ class ReviewsPage extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-
-                      // التقييم بالنجوم
                       RatingBarIndicator(
                         rating: eval.rate,
                         itemBuilder: (context, _) =>
@@ -104,8 +100,6 @@ class ReviewsPage extends StatelessWidget {
                         itemSize: 24,
                       ),
                       const SizedBox(height: 8),
-
-                      // التعليق
                       Text(
                         eval.review.toString(),
                         style: TextStyle(color: Colors.grey[800], fontSize: 14),
