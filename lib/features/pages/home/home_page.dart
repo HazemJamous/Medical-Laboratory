@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/home/cubit/home_cubit.dart';
+import 'package:midical_laboratory/shared/widgets/home_widgets/appointment_button.dart';
 import 'package:midical_laboratory/shared/widgets/home_widgets/horizantall_labs.dart';
 
 class HomePage extends StatelessWidget {
@@ -53,9 +54,13 @@ class HomePage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildUpcomingAppointmentCard(),
+                    buildUpcomingAppointmentCard(),
                     const SizedBox(height: 20),
-                    _buildNewAppointmentButton(context),
+                    NewAppointmentButton(
+                      onPressed: () {
+                        print("hhhhhhhhhhh");
+                      },
+                    ),
                     const SizedBox(height: 30),
                     const Text(
                       "المخابر المفضلة",
@@ -90,7 +95,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingAppointmentCard() {
+  Widget buildUpcomingAppointmentCard() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -129,37 +134,6 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildNewAppointmentButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: const Icon(
-          Icons.add_circle_outline,
-          color: Colors.white,
-          size: 22,
-        ),
-        label: const Text(
-          "حجز موعد جديد",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        onPressed: () {
-          // Navigate to booking
-        },
       ),
     );
   }

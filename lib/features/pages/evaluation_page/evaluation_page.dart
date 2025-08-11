@@ -11,8 +11,7 @@ class ReviewsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AllEvaluationCubit(labId)..getAllEvaluationsById(),
+      create: (context) => AllEvaluationCubit(labId)..getAllEvaluationsById(),
       child: BlocBuilder<AllEvaluationCubit, AllEvaluationState>(
         builder: (context, state) {
           final evaluation_cubit = context.read<AllEvaluationCubit>();
