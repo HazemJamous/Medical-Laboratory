@@ -21,10 +21,11 @@ class HorizontalLabs extends StatelessWidget {
         itemBuilder: (_, index) {
           final int labId = labDataService[index].id;
           return LabCard(
-            title: labDataService[index].labName ?? 'مخبر',
-            imageUrl: ApiLink.fileUrl(labDataService[index].imagePath) ?? '',
+            title: labDataService[index].labName,
+            imageUrl: ApiLink.fileUrl(labDataService[index].imagePath),
             cardHeight: 130,
             labId: labId,
+            labName: labDataService[index].labName,
           );
         },
       ),

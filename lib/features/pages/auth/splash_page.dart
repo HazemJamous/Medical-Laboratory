@@ -93,7 +93,7 @@ class _SplashPageState extends State<SplashPage>
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.heading,
+                      color: AppColors.buttonPrimaryText,
                     ),
                   ),
                 ),
@@ -104,7 +104,7 @@ class _SplashPageState extends State<SplashPage>
                     "Connecting Patients with Labs",
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppColors.pageTitle.withOpacity(0.7),
+                      color: AppColors.textColor.withOpacity(0.7),
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart';
+import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
 import 'package:midical_laboratory/features/pages/auth/splash_page.dart';
 
 void main() {
@@ -8,7 +9,6 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider<LabSearchCubit>(create: (_) => LabSearchCubit()),
-        // ممكن تحط Cubits/Blocs تانين
       ],
       child: MidicalLaboratoryApp(),
     ),

@@ -50,7 +50,7 @@ class LabSearchService {
     String query,
     FilterOptions filterOptions,
   ) async {
-    Dio dio = Dio();
+    Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString("token")!;
     String filter = '';

@@ -60,13 +60,39 @@ class _LoginPageState extends State<LoginPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
             centerTitle: true,
-            title: Text(
-              'Welcome Back',
-              style: AppTextStyle.style1.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.heading,
-              ),
+            toolbarHeight: 180, // زيادة الارتفاع عشان نستوعب اللوجو
+            title: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Welcome Back',
+                  style: AppTextStyle.style1.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.buttonPrimaryText,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    Icons.biotech_rounded,
+                    color: AppColors.primary,
+                    size: 50,
+                  ),
+                ),
+              ],
             ),
           ),
           body: Container(
@@ -78,118 +104,151 @@ class _LoginPageState extends State<LoginPage> {
                 end: Alignment.bottomCenter,
               ),
             ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
-                ),
-                child: Center(
-                  child: Card(
-                    elevation: 8,
-                    shadowColor: Colors.black26,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Login',
-                              style: AppTextStyle.style1.copyWith(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            NameFormField(
-                              label: 'Email Address',
-                              controller: _emailController,
-                              type: TextInputType.emailAddress,
-                              prefixIcon: Icons.email,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                final pattern =
-                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-                                if (!RegExp(pattern).hasMatch(value)) {
-                                  return 'Invalid email format';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            PasswordFormField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
-                                }
-                                return value.length >= 6
-                                    ? null
-                                    : 'At least 6 characters';
-                              },
-                            ),
-                            const SizedBox(height: 24),
-                            BlocBuilder<LoginCubit, LoginState>(
-                              builder: (context, state) {
-                                if (state is LoadingState) {
-                                  return CircularProgressIndicator();
-                                }
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Center(
+                                  child: Card(
+                                    elevation: 8,
+                                    shadowColor: Colors.black26,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'Login',
+                                              style: AppTextStyle.style1
+                                                  .copyWith(
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                            const SizedBox(height: 24),
+                                            NameFormField(
+                                              label: 'Email Address',
+                                              controller: _emailController,
+                                              type: TextInputType.emailAddress,
+                                              prefixIcon: Icons.email,
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Please enter your email';
+                                                }
+                                                final pattern =
+                                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                                                if (!RegExp(
+                                                  pattern,
+                                                ).hasMatch(value)) {
+                                                  return 'Invalid email format';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                            const SizedBox(height: 16),
+                                            PasswordFormField(
+                                              controller: _passwordController,
+                                              label: 'Password',
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return 'Please enter your password';
+                                                }
+                                                return value.length >= 6
+                                                    ? null
+                                                    : 'At least 6 characters';
+                                              },
+                                            ),
+                                            const SizedBox(height: 24),
+                                            BlocBuilder<LoginCubit, LoginState>(
+                                              builder: (context, state) {
+                                                if (state is LoadingState) {
+                                                  return CircularProgressIndicator();
+                                                }
 
-                                return CustomButton(
-                                  text: 'Login',
-                                  width: thirdWidth,
-                                  function: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      BlocProvider.of<LoginCubit>(
-                                        context,
-                                      ).login(
-                                        LogInRequestModel(
-                                          email: _emailController.text,
-                                          password: _passwordController.text,
+                                                return CustomButton(
+                                                  text: 'Login',
+                                                  width: thirdWidth,
+                                                  function: () {
+                                                    if (_formKey.currentState!
+                                                        .validate()) {
+                                                      BlocProvider.of<LoginCubit>(
+                                                        context,
+                                                      ).login(
+                                                        LogInRequestModel(
+                                                          email:
+                                                              _emailController
+                                                                  .text,
+                                                          password:
+                                                              _passwordController
+                                                                  .text,
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Text(
+                                                  "Don't have an account?",
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            const RegisterPage(),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text(
+                                                    'Register Now',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: AppColors
+                                                          .buttonPrimary,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      );
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text("Don't have an account?"),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const RegisterPage(),
                                       ),
-                                    );
-                                  },
-                                  child: const Text(
-                                    'Register Now',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.buttonPrimary,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ),

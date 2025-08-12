@@ -15,7 +15,7 @@ class _FilterWidgetState extends State<FilterWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // لضبط المساحة بالنسبة للكيبورد
+      
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
@@ -60,7 +60,6 @@ class _FilterWidgetState extends State<FilterWidget> {
           //   ),
           // ),
 
-          // أزرار المسح والتطبيق
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(

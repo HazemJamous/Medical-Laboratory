@@ -1,5 +1,5 @@
 abstract final class ApiLink {
-  static const baseUrl = "http://10.0.2.2:8000";
+  static const baseUrl = "http://192.168.1.103:8000";
   static const baseApiUrl = "$baseUrl/api";
   static const login = '$baseApiUrl/login';
   static const advertisementSearch = '$baseApiUrl/advertisementSearch';

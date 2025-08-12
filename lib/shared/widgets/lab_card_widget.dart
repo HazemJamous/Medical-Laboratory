@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
+import 'package:midical_laboratory/features/pages/tabs_options/tabs_options.dart';
 import 'package:midical_laboratory/models/lap_information_model.dart';
 import 'package:midical_laboratory/shared/widgets/favorite_widget.dart';
 
@@ -14,81 +15,101 @@ class LabCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final double cardHeight = MediaQuery.of(context).size.height / 5;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.secondary, Colors.white, AppColors.accentLight],
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      height: cardHeight,
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(20),
-              bottomLeft: Radius.circular(20),
+    return InkWell(
+      onTap: () {
+        print('lab-----------');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CategoryTabsExample(
+              labId: cardModel.id,
+              labName: cardModel.labName,
             ),
-            child: CachedNetworkImage(
-              width: 120,
-              height: cardHeight,
-              fit: BoxFit.contain,
-              imageUrl: ApiLink.fileUrl(cardModel.imagePath),
-              // "https://beauty-station-back.bayanmasters.com/storage/services/e4Wb2qS1JQ55c0PFIfionHNKVImCIku7PuZAxDj0.jpg",
-              placeholder: (ctx, url) => Container(
-                color: Colors.grey.shade200,
-                child: const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.secondary, Colors.white, AppColors.accentLight],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        height: cardHeight,
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              child: CachedNetworkImage(
+                width: 120,
+                height: cardHeight,
+                fit: BoxFit.contain,
+                imageUrl: ApiLink.fileUrl(cardModel.imagePath),
+                // "https://beauty-station-back.bayanmasters.com/storage/services/e4Wb2qS1JQ55c0PFIfionHNKVImCIku7PuZAxDj0.jpg",
+                placeholder: (ctx, url) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                errorWidget: (ctx, url, err) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
                 ),
               ),
-              errorWidget: (ctx, url, err) => Container(
-                color: Colors.grey.shade200,
-                child: const Icon(Icons.broken_image, color: Colors.grey),
-              ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    cardModel.labName,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.pageTitle,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      cardModel.labName,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.pageTitle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    '${cardModel.location.city} • ${cardModel.location.address}',
-                    style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      '${cardModel.location.city} • ${cardModel.location.address}',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: FavoriteWidget(
-              isFavorite: cardModel.isfavorite,
-              labId: cardModel.id,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: FavoriteWidget(
+                isFavorite: cardModel.isfavorite,
+                labId: cardModel.id,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

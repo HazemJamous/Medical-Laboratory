@@ -2,13 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/core/constant/app_text_style.dart';
-import 'package:midical_laboratory/features/pages/evaluation_page/evaluation_page.dart';
+import 'package:midical_laboratory/features/pages/tabs_options/tabs_options.dart';
 
 class LabCard extends StatelessWidget {
   final String title;
   final String imageUrl;
   final double cardHeight;
   final int labId;
+  final String labName;
 
   const LabCard({
     Key? key,
@@ -16,6 +17,7 @@ class LabCard extends StatelessWidget {
     required this.imageUrl,
     required this.cardHeight,
     required this.labId,
+    required this.labName,
   }) : super(key: key);
 
   @override
@@ -24,7 +26,7 @@ class LabCard extends StatelessWidget {
       width: cardHeight * 1.2,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           colors: [AppColors.secondary, Colors.white, AppColors.accentLight],
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
@@ -40,7 +42,10 @@ class LabCard extends StatelessWidget {
           print("lab id :$labId");
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ReviewsPage(labId: labId)),
+            MaterialPageRoute(
+              builder: (context) =>
+                  CategoryTabsExample(labId: labId, labName: labName),
+            ),
           );
         },
         child: Column(
