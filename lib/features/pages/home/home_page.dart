@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/home/cubit/home_cubit.dart';
+import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
 import 'package:midical_laboratory/shared/widgets/home_widgets/appointment_button.dart';
 import 'package:midical_laboratory/shared/widgets/home_widgets/horizantall_labs.dart';
 
@@ -16,7 +17,7 @@ class HomePage extends StatelessWidget {
         builder: (context, state) {
           final home_cubit = context.read<HomeCubit>();
           if (state is HomeLoading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (state is HomeLoaded) {
             return Scaffold(
               appBar: PreferredSize(
@@ -49,6 +50,9 @@ class HomePage extends StatelessWidget {
                   iconTheme: const IconThemeData(color: Colors.white),
                 ),
               ),
+
+              // إضافة Drawer
+              drawer: _buildDrawer(context),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -88,9 +92,95 @@ class HomePage extends StatelessWidget {
               ),
             );
           } else {
-            return Text("out of expecting");
+            return const Text("out of expecting");
           }
         },
+      ),
+    );
+  }
+
+  // Drawer Widget
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.accent,
+                  AppColors.accentLight,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Center(
+                child: Text(
+                  "مرحباً بك في تطبيق \n Medical Laboratory👋",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: IconButton(
+              icon: Icon(Icons.logout, color: AppColors.primary),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+                print("تم تسجيل الخروج");
+              },
+            ),
+            title: const Text(
+              "تسجيل خروج",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
+          ListTile(
+            leading: IconButton(
+              icon: Icon(Icons.settings, color: AppColors.primary),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+                print("تم تسجيل الخروج");
+              },
+            ),
+            title: const Text(
+              "الإعدادات",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
+          ListTile(
+            leading: IconButton(
+              icon: Icon(Icons.person, color: AppColors.primary),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+                print("تم تسجيل الخروج");
+              },
+            ),
+            title: const Text(
+              "الملف الشخصي",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -111,7 +201,7 @@ class HomePage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.access_time, color: AppColors.primary, size: 36),
+          const Icon(Icons.access_time, color: AppColors.primary, size: 36),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -137,6 +227,8 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
 
   // Widget _horizontalLabList(double cardHeight) {
   //   String imageUrl1 =
@@ -170,4 +262,4 @@ class HomePage extends StatelessWidget {
   //     ),
   //   );
   // }
-}
+

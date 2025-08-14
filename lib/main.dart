@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart';
 import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
 import 'package:midical_laboratory/features/pages/auth/splash_page.dart';
+import 'package:midical_laboratory/features/pages/basic_page.dart';
 
 void main() {
   runApp(
@@ -29,7 +30,7 @@ class MidicalLaboratoryApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
 
-      home: SplashPage(),
+      home: BasicPage(),
     );
   }
 }
