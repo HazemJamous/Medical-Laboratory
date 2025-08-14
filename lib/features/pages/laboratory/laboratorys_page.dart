@@ -16,8 +16,133 @@ class LabsPage extends StatefulWidget {
 
 class _LabsPageState extends State<LabsPage> {
   final searchController = TextEditingController();
-
   final filterOptions = FilterOptions();
+
+  @override
+  void initState() {
+    super.initState();
+    // أول ما تفتح الصفحة، جيب كل المخابر
+    context.read<LabSearchCubit>().getLabs(null, filterOptions);
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'خيارات الفلترة',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  const Divider(height: 20, thickness: 1),
+                  SwitchListTile(
+                    activeColor: AppColors.accent,
+                    title: const Text('المخابر المفضلة'),
+                    value: filterOptions.isFavorite,
+                    onChanged: (v) {
+                      setModalState(() {
+                        filterOptions.isFavorite = v;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'التقييم الأدنى:',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  RatingBar.builder(
+                    initialRating: filterOptions.rating,
+                    minRating: 0,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemBuilder: (context, _) =>
+                        const Icon(Icons.star, color: Colors.amber),
+                    itemSize: 28,
+                    onRatingUpdate: (rating) {
+                      setModalState(() {
+                        filterOptions.rating = rating;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setModalState(() {
+                            filterOptions.isFavorite = false;
+                            filterOptions.isSubscrip = 0;
+                            filterOptions.rating = 0;
+                          });
+                          Navigator.pop(context);
+                          context.read<LabSearchCubit>().getLabs(
+                            null,
+                            filterOptions,
+                          );
+                        },
+                        child: const Text('مسح الفلترة'),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.accent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.read<LabSearchCubit>().getLabs(
+                            searchController.text,
+                            filterOptions,
+                          );
+                        },
+                        child: const Text(
+                          'حفظ الفلترة',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +179,6 @@ class _LabsPageState extends State<LabsPage> {
       body: Column(
         children: [
           const SizedBox(height: 10),
-          // Search + filter bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
@@ -93,95 +217,7 @@ class _LabsPageState extends State<LabsPage> {
                   ),
                   child: IconButton(
                     icon: const Icon(Icons.filter_list, color: Colors.white),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                        ),
-                        builder: (_) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'خيارات الفلترة',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                SwitchListTile(
-                                  title: const Text('المخابر المفضلة'),
-                                  value: filterOptions.isFavorite,
-                                  onChanged: (v) {
-                                    filterOptions.isFavorite = v;
-                                    setState(() {});
-                                  },
-                                ),
-                                const SizedBox(height: 16),
-                                RatingBarIndicator(
-                                  rating: filterOptions.rating,
-                                  itemBuilder: (context, _) => const Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  itemSize: 24,
-                                ), 
-                                // SwitchListTile(
-                                //   title: const Text('المخابر المشترك فيها'),
-                                //   value: filterOpt.isSubscrip,
-                                //   onChanged: (v) => filterOpt.isSubscrip = 1 ,
-                                // ),
-                                const SizedBox(height: 16),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () {
-                                        filterOptions.isFavorite = false;
-                                        filterOptions.isSubscrip = 0;
-                                        filterOptions.rating = 0;
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('مسح الفلترة'),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.accent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                      ),
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text(
-                                        'حفظ الفلترة',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                      // _showFilterOptions(context, filterOptions);
-                      // setState(() {});
-                    },
+                    onPressed: _showFilterSheet,
                   ),
                 ),
               ],
@@ -201,12 +237,6 @@ class _LabsPageState extends State<LabsPage> {
                 } else if (state is FailureState) {
                   return const Center(child: Text("Check Internet"));
                 } else {
-                  context.read<LabSearchCubit>().getLabs(
-                    searchController.text.isNotEmpty
-                        ? searchController.text
-                        : null,
-                    filterOptions,
-                  );
                   return const Center(child: CircularProgressIndicator());
                 }
               },

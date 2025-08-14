@@ -5,11 +5,13 @@ abstract final class ApiLink {
   static const baseApiUrl = "$baseUrl/api";
   static const login = '$baseApiUrl/login';
   static const advertisementSearch = '$baseApiUrl/advertisementSearch';
-  static const labSearchPatient = '$baseApiUrl/labSearchPatient';
+  static const  labSearchPatient = '$baseApiUrl/labSearchPatient';
   static const registerPatient = '$baseApiUrl/registerPatient';
   static const allEvaluation = '$baseApiUrl/allEvaluation';
   static const availableAppintments = '$baseApiUrl/labs';
+  // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
 
+// "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",
 
   static String fileUrl(String url) {
     if (url.startsWith(baseUrl)) return url;
@@ -22,4 +24,7 @@ abstract final class ApiLink {
    static String fileUrlForAvailableAppointments(int lab_id) {
     return '$availableAppintments/$lab_id/available-appointments';
   }
+  //   static String fileUrlForFavoriteLabs(bool isFav) {
+  //   return '$favoriteLabsForPatient/$isFav';
+  // }
 }

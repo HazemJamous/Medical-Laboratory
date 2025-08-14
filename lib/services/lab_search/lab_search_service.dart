@@ -66,8 +66,11 @@ class LabSearchService {
     }
     if (query != null) {}
     try {
+      print("+++++++++++++before response");
+
       Response response = await dio.get(
-        "${ApiLink.baseUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}&subscriptions_status=${filterOptions.isSubscrip}&lab_name=${query}",
+        "${ApiLink.baseApiUrl}/labSearchPatient?isfavorite=${filterOptions.isFavorite ? 1 : 0}",
+        // &subscriptions_status=${filterOptions.isSubscrip}&lab_name=${query}",
         // queryParameters: {
         //   "isfavorite":,
         // },
@@ -75,7 +78,11 @@ class LabSearchService {
       );
       if (response.statusCode == 200) {
         List<LabInformationModel> labInfo = [];
-        for (var i = 0; i < response.data["data"]["labs"].length; i++) {
+        for (
+          var i = 0;
+          i < (response.data['data']['labs'] as List).length;
+          i++
+        ) {
           LabInformationModel newLab = LabInformationModel.fromMap(
             response.data["data"]["labs"][i],
           );
@@ -98,7 +105,9 @@ class LabSearchService {
         return [];
       }
     } catch (e) {
-      print(e.toString());
+      print(
+        "--------------" + e.toString() + "-------------------------------",
+      );
       return [];
     }
   }

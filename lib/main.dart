@@ -30,7 +30,7 @@ class MidicalLaboratoryApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
 
-      home: BasicPage(),
+      home: LoginPage(),
     );
   }
 }

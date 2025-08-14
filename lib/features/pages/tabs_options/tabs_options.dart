@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/features/pages/booking/booking_page.dart';
 import 'package:midical_laboratory/features/pages/evaluation_page/evaluation_page.dart';
+import 'package:midical_laboratory/features/pages/laboratory/analayses_page.dart';
 
 class CategoryTabsExample extends StatelessWidget {
   final int labId;
@@ -62,10 +63,7 @@ class CategoryTabsExample extends StatelessWidget {
         body: TabBarView(
           children: [
             ReviewsPage(labId: labId),
-
-            const Center(
-              child: Text('قائمة التحاليل', style: TextStyle(fontSize: 18)),
-            ),
+            AnalysesGridPage(),
             BookingWidget(labId: labId),
           ],
         ),

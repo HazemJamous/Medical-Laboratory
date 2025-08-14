@@ -6,7 +6,7 @@ class LoadingState extends LabSearchState {}
 
 class SuccessState extends LabSearchState {
   List<LabInformationModel> labInfo;
-  SuccessState({required this.labInfo});
+    SuccessState({required this.labInfo});
 }
 
 class FailureState extends LabSearchState {
