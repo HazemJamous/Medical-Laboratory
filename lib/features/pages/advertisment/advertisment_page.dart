@@ -16,7 +16,7 @@ class AdvertismentPage extends StatelessWidget {
       create: (_) =>
           AdvertismentCubit(AdvertismentService())..getAdvertismentCubit(),
       child: BlocBuilder<AdvertismentCubit, AdvertismentState>(
-        builder: (context, state) {
+        builder: (context, state) { 
           if (state is AdvertismentLoadingState) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),

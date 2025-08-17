@@ -21,10 +21,8 @@ class LabCardWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CategoryTabsExample(
-              labId: cardModel.id,
-              labName: cardModel.labName,
-            ),
+            builder: (context) =>
+                CategoryTabs(labId: cardModel.id, labName: cardModel.labName),
           ),
         );
       },

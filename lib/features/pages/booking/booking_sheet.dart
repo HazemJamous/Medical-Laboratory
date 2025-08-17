@@ -1,183 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
+import 'package:midical_laboratory/features/pages/analyses/analayses_page.dart';
+import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/shared/widgets/custom_button.dart';
-import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 
-class Analysis {
-  final int id;
-  final String name;
-  final String preconditions;
-  final double price;
-  final String labName;
-
-  Analysis({
-    required this.id,
-    required this.name,
-    required this.preconditions,
-    required this.price,
-    required this.labName,
-  });
-}
-
-class AvailableDateTime {
-  final DateTime dateTime;
-  final List<String> typeOptions;
-  AvailableDateTime({required this.dateTime, required this.typeOptions});
-}
-
-class AnalysesGridPage extends StatelessWidget {
-  AnalysesGridPage({Key? key}) : super(key: key);
-
-  final List<Analysis> analyses = [
-    Analysis(
-      id: 2,
-      name: "1 & 25-Dihydroxy Vitamin D",
-      preconditions: "None",
-      price: 60,
-      labName: "مخبر الشفاء",
-    ),
-    Analysis(
-      id: 2,
-      name: "17-Ketosteroids",
-      preconditions: "Collect 24-hour urine with preservative",
-      price: 20,
-      labName: "مخبر النور",
-    ),
-  ];
-
-  void _showBookingBottomSheet(BuildContext context, Analysis analysis) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) {
-        return RTLWrapper(child: _BookingBottomSheet(analysis: analysis));
-      },
-    );
-  }
-
-  Widget _buildAnalysisCard(BuildContext context, Analysis analysis) {
-    return InkWell(
-      onTap: () => _showBookingBottomSheet(context, analysis),
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: AppColors.accent,
-                  child: const Icon(
-                    Icons.biotech,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    analysis.labName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.pageTitle,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-
-            Text(
-              analysis.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.5,
-                color: AppColors.textColor,
-              ),
-            ),
-            const Spacer(),
-
-            Row(
-              children: [
-                Text(
-                  "${analysis.price.toStringAsFixed(0)} \$",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Spacer(),
-                const Icon(
-                  Icons.arrow_upward_rounded,
-                  size: 16,
-                  color: Colors.transparent,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+class BookingBottomSheet extends StatefulWidget {
+  final AnalayseModel analysis;
+  const BookingBottomSheet({required this.analysis});
 
   @override
-  Widget build(BuildContext context) {
-    return RTLWrapper(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF7F8FA),
-        body: Padding(
-          padding: const EdgeInsets.all(12),
-          child: GridView.builder(
-            itemCount: analyses.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.9,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemBuilder: (context, index) =>
-                _buildAnalysisCard(context, analyses[index]),
-          ),
-        ),
-      ),
-    );
-  }
+  State<BookingBottomSheet> createState() => _BookingBottomSheetState();
 }
 
-class _BookingBottomSheet extends StatefulWidget {
-  final Analysis analysis;
-  const _BookingBottomSheet({required this.analysis});
-
-  @override
-  State<_BookingBottomSheet> createState() => _BookingBottomSheetState();
-}
-
-class _BookingBottomSheetState extends State<_BookingBottomSheet>
+class _BookingBottomSheetState extends State<BookingBottomSheet>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
@@ -280,7 +116,7 @@ class _BookingBottomSheetState extends State<_BookingBottomSheet>
           ),
           const SizedBox(height: 12),
           Text(
-            widget.analysis.name,
+            widget.analysis.labAnalysesName,
             style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -294,7 +130,7 @@ class _BookingBottomSheetState extends State<_BookingBottomSheet>
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  widget.analysis.labName,
+                  widget.analysis.labAnalysesName,
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ),
