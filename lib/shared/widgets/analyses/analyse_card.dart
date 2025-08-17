@@ -35,7 +35,7 @@ class AnalysisCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => _showBookingBottomSheet(context), // صار يستدعي التابع
+      onTap: () => _showBookingBottomSheet(context),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(

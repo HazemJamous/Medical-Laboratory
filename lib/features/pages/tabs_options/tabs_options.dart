@@ -16,9 +16,7 @@ class CategoryTabs extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(
-            80,
-          ), // كبّرت الارتفاع من 60 لـ 80
+          preferredSize: const Size.fromHeight(80),
           child: AppBar(
             flexibleSpace: Container(
               decoration: BoxDecoration(
@@ -36,14 +34,14 @@ class CategoryTabs extends StatelessWidget {
             elevation: 0,
             centerTitle: true,
             title: Text(
-              "$labName", 
-              textAlign: TextAlign.center, 
-              maxLines: 2, 
-              overflow: TextOverflow.ellipsis, 
+              "$labName",
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
-                fontSize: 22, 
+                fontSize: 22,
               ),
             ),
             bottom: const TabBar(
