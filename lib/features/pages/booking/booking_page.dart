@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/shared/widgets/custom_button.dart';
+import 'package:midical_laboratory/shared/widgets/custom_form_filed.dart';
 
 class BookingWidget extends StatefulWidget {
   final int labId;
@@ -22,9 +23,13 @@ class AvailableDateTime {
 class _BookingWidgetState extends State<BookingWidget> {
   final _formKey = GlobalKey<FormState>();
 
-  String patientName = '';
-  String patientPhone = '';
-  String patientIdNumber = '';
+  final _patientName = TextEditingController();
+  final _patientPhone = TextEditingController();
+  final _patientIdNumber = TextEditingController();
+
+  // String patientName = '';
+  // String patientPhone = '';
+  // String patientIdNumber = '';
 
   late List<AvailableDateTime> availableDateTimes;
   AvailableDateTime? selectedDateTime;
@@ -57,9 +62,9 @@ class _BookingWidgetState extends State<BookingWidget> {
 
       final bookingRequest = {
         "type": selectedType,
-        "patient_name": patientName,
-        "patient_phone": patientPhone,
-        "patient_id_number": patientIdNumber,
+        "patient_name": _patientName,
+        "patient_phone": _patientPhone,
+        "patient_id_number": _patientIdNumber,
         "patient_id": 1,
         "lab_id": widget.labId,
         "date_time": selectedDateTime!.dateTime.toIso8601String(),
@@ -205,29 +210,40 @@ class _BookingWidgetState extends State<BookingWidget> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'ادخل اسم المريض',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
+                NameFormField(
+                  label: 'ادخل اسم المريض',
+                  controller: _patientName,
+                  type: TextInputType.name,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'الرجاء إدخال اسم المريض';
                     }
                     return null;
                   },
-                  onSaved: (val) => patientName = val!.trim(),
                 ),
 
+                // TextFormField(
+                //   decoration: InputDecoration(
+                //     hintText: 'ادخل اسم المريض',
+                //     filled: true,
+                //     fillColor: Colors.white,
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(borderRadius),
+                //       borderSide: BorderSide.none,
+                //     ),
+                //     contentPadding: const EdgeInsets.symmetric(
+                //       horizontal: 16,
+                //       vertical: 14,
+                //     ),
+                //   ),
+                //   validator: (value) {
+                //     if (value == null || value.trim().isEmpty) {
+                //       return 'الرجاء إدخال اسم المريض';
+                //     }
+                //     return null;
+                //   },
+                //   onSaved: (val) => patientName = val!.trim(),
+                // ),
                 const SizedBox(height: 16),
 
                 Text(
@@ -239,21 +255,10 @@ class _BookingWidgetState extends State<BookingWidget> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                TextFormField(
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    hintText: 'ادخل رقم الهاتف',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
+                NameFormField(
+                  label: 'ادخل رقم الهاتف',
+                  controller: _patientPhone,
+                  type: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'الرجاء إدخال رقم الهاتف';
@@ -263,9 +268,34 @@ class _BookingWidgetState extends State<BookingWidget> {
                     }
                     return null;
                   },
-                  onSaved: (val) => patientPhone = val!.trim(),
                 ),
 
+                // TextFormField(
+                //   keyboardType: TextInputType.phone,
+                //   decoration: InputDecoration(
+                //     hintText: 'ادخل رقم الهاتف',
+                //     filled: true,
+                //     fillColor: Colors.white,
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(borderRadius),
+                //       borderSide: BorderSide.none,
+                //     ),
+                //     contentPadding: const EdgeInsets.symmetric(
+                //       horizontal: 16,
+                //       vertical: 14,
+                //     ),
+                //   ),
+                //   validator: (value) {
+                //     if (value == null || value.trim().isEmpty) {
+                //       return 'الرجاء إدخال رقم الهاتف';
+                //     }
+                //     if (!RegExp(r'^\d{9,15}$').hasMatch(value.trim())) {
+                //       return 'رقم الهاتف غير صحيح';
+                //     }
+                //     return null;
+                //   },
+                //   onSaved: (val) => patientPhone = val!.trim(),
+                // ),
                 const SizedBox(height: 16),
 
                 Text(
@@ -277,29 +307,42 @@ class _BookingWidgetState extends State<BookingWidget> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: 'ادخل رقم الهوية',
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(borderRadius),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                  ),
+                NameFormField(
+                  label: 'ادخل رقم الهوية',
+                  controller: _patientIdNumber,
+                  type: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'الرجاء إدخال رقم الهوية';
+                    } else if (value.length < 10) {
+                      return 'الرجاء إدخال رقم هوية صحيح';
                     }
                     return null;
                   },
-                  onSaved: (val) => patientIdNumber = val!.trim(),
                 ),
 
+                // TextFormField(
+                //   decoration: InputDecoration(
+                //     hintText: 'ادخل رقم الهوية',
+                //     filled: true,
+                //     fillColor: Colors.white,
+                //     border: OutlineInputBorder(
+                //       borderRadius: BorderRadius.circular(borderRadius),
+                //       borderSide: BorderSide.none,
+                //     ),
+                //     contentPadding: const EdgeInsets.symmetric(
+                //       horizontal: 16,
+                //       vertical: 14,
+                //     ),
+                //   ),
+                //   validator: (value) {
+                //     if (value == null || value.trim().isEmpty) {
+                //       return 'الرجاء إدخال رقم الهوية';
+                //     }
+                //     return null;
+                //   },
+                //   onSaved: (val) => patientIdNumber = val!.trim(),
+                // ),
                 const SizedBox(height: 30),
 
                 SizedBox(
