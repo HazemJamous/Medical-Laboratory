@@ -3,10 +3,8 @@ import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class   AnalysesService {
    static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
-
  static Future<List<AnalayseModel>?> getAllAnalyses(int labId) async {
     try {
       SharedPreferences sharedPreferences =
@@ -18,7 +16,6 @@ class   AnalysesService {
       );
       if (response.statusCode == 200) {
         List<AnalayseModel> list = [];
-
         print(response.data['data']['analyses']);
 
         for (
@@ -41,4 +38,4 @@ class   AnalysesService {
       return null;
     }
   }
-}
+} 

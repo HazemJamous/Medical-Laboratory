@@ -38,8 +38,8 @@ class LabCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          print("+++++++++++++++++++++++++++++");
-          print("lab id :$labId");
+          // print("+++++++++++++++++++++++++++++");
+          // print("lab id :$labId");
           Navigator.push(
             context,
             MaterialPageRoute(

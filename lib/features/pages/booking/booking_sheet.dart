@@ -77,7 +77,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
         "patient_id_number": patientIdNumber,
         "patient_id": 1,
         "lab_id":
-            widget.analysis.id, // غيّرها لاحقاً إذا بدك معرف المخبر الحقيقي
+            widget.analysis.id, 
         "date_time": selectedDateTime!.dateTime.toIso8601String(),
       };
 
