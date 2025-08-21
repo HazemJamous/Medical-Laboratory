@@ -27,7 +27,9 @@ class AnalysisCard extends StatelessWidget {
       ),
       builder: (_) {
         // استدعاء البوتوم شيت يلي عندك
-        return RTLWrapper(child: BookingBottomSheet(analysis: analysis));
+        return RTLWrapper(
+          child: BookingBottomSheet(analysis: analysis, labId: labId),
+        );
       },
     );
   }

@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
-import 'package:midical_laboratory/features/pages/booking/booking_page.dart';
+
+import 'package:midical_laboratory/features/pages/booking/booking_sheet.dart';
 import 'package:midical_laboratory/features/pages/evaluation_page/evaluation_page.dart';
 import 'package:midical_laboratory/features/pages/analyses/analayses_page.dart';
+import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 
 class CategoryTabs extends StatelessWidget {
   final int labId;
   final String? labName;
-
-  const CategoryTabs({super.key, required this.labId, this.labName});
+  final AnalayseModel? analysis;
+  const CategoryTabs({
+    super.key,
+    required this.labId,
+    this.labName,
+    this.analysis,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +69,7 @@ class CategoryTabs extends StatelessWidget {
           children: [
             ReviewsPage(labId: labId),
             AnalysesGridPage(labId: labId, labName: labName!),
-            BookingWidget(labId: labId),
+            BookingBottomSheet(analysis: analysis, labId: labId),
           ],
         ),
       ),

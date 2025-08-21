@@ -7,7 +7,7 @@ part 'advertisment_state.dart';
 
 class AdvertismentCubit extends Cubit<AdvertismentState> {
   AdvertismentCubit(this._advertismentService)
-    : super(AdvertismentLoadingState());
+    : super(AdvertismentLoadingState());  
 
   AdvertismentService _advertismentService;
 

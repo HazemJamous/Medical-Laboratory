@@ -6,8 +6,9 @@ import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 
 class BookingBottomSheet extends StatefulWidget {
-  final AnalayseModel analysis;
-  const BookingBottomSheet({required this.analysis});
+  final AnalayseModel? analysis;
+  final int labId;
+  const BookingBottomSheet({required this.analysis, required this.labId});
 
   @override
   State<BookingBottomSheet> createState() => _BookingBottomSheetState();
@@ -76,8 +77,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
         "patient_phone": patientPhone,
         "patient_id_number": patientIdNumber,
         "patient_id": 1,
-        "lab_id":
-            widget.analysis.id, 
+        "lab_id": widget.analysis!.id,
         "date_time": selectedDateTime!.dateTime.toIso8601String(),
       };
 
@@ -116,7 +116,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
           ),
           const SizedBox(height: 12),
           Text(
-            widget.analysis.labAnalysesName,
+            widget.analysis!.labAnalysesName,
             style: const TextStyle(
               fontSize: 18,
               color: Colors.white,
@@ -130,7 +130,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  widget.analysis.labAnalysesName,
+                  widget.analysis!.labAnalysesName,
                   style: const TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ),
@@ -145,7 +145,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  "${widget.analysis.price.toStringAsFixed(0)} \$",
+                  "${widget.analysis!.price.toStringAsFixed(0)} \$",
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -155,9 +155,9 @@ class _BookingBottomSheetState extends State<BookingBottomSheet>
             ],
           ),
           const SizedBox(height: 6),
-          if (widget.analysis.preconditions.isNotEmpty)
+          if (widget.analysis!.preconditions.isNotEmpty)
             Text(
-              "الشروط: ${widget.analysis.preconditions}",
+              "الشروط: ${widget.analysis!.preconditions}",
               style: const TextStyle(color: Colors.white70, fontSize: 12.5),
             ),
         ],
