@@ -20,13 +20,9 @@ class GetAvailableAppointmentsService {
       if (response.statusCode == 200) {
         List<AvailableAppointmentsModel> list = [];
 
-        for (
-          var i = 0;
-          i < (response.data['data']['evaluations'] as List).length;
-          i++
-        ) {
+        for (var i = 0; i < (response.data['data'] as List).length; i++) {
           AvailableAppointmentsModel card = AvailableAppointmentsModel.fromMap(
-            response.data['data']['evaluations'][i],
+            response.data['data'][i],
           );
           list.add(card);
         }

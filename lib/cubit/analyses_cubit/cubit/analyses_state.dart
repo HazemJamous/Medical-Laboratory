@@ -14,6 +14,6 @@ class AnalysesFailure extends AnalysesState {}
 
 class SelectionModeChanged extends AnalysesState {
   final bool isSelectionMode;
-  final List<int> selectedIds;
+  final List<num> selectedIds;
   SelectionModeChanged({required this.isSelectionMode, required this.selectedIds});
 }

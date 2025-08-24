@@ -11,7 +11,7 @@ class AnalysesCubit extends Cubit<AnalysesState> {
   List<AnalayseModel> allAnalysesById = [];
 
   bool isSelectionMode = false;
-  List<int> selectedIds = [];
+  List<num> selectedIds = [];
 
   void toggleSelectionMode(bool enable) {
     isSelectionMode = enable;
@@ -43,5 +43,7 @@ class AnalysesCubit extends Cubit<AnalysesState> {
     emit(AnalysesLoading());
     allAnalysesById = await AnalysesService.getAllAnalyses(labId) ?? [];
     emit(AnalysesLoaded());
+    print(" ====== length ===== ${allAnalysesById.length}");
+    print("--------after loaded------");
   }
 }

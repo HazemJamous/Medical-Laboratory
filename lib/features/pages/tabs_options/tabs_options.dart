@@ -20,7 +20,7 @@ class CategoryTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80),
@@ -60,7 +60,7 @@ class CategoryTabs extends StatelessWidget {
               tabs: [
                 Tab(text: 'آراء المرضى'),
                 Tab(text: 'التحاليل'),
-                Tab(text: 'الحجـوزات'),
+                // Tab(text: 'الحجـوزات'),
               ],
             ),
           ),
@@ -69,7 +69,7 @@ class CategoryTabs extends StatelessWidget {
           children: [
             ReviewsPage(labId: labId),
             AnalysesGridPage(labId: labId, labName: labName!),
-            BookingBottomSheet(analysis: analysis, labId: labId),
+            // BookingBottomSheet(analysis: analysis, labId: labId),
           ],
         ),
       ),

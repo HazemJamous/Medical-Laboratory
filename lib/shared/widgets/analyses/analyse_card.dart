@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/analyses_cubit/cubit/analyses_cubit.dart';
+import 'package:midical_laboratory/features/pages/booking/analysis_details_sheet.dart';
 import 'package:midical_laboratory/features/pages/booking/booking_sheet.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
@@ -29,12 +30,11 @@ class AnalysisCard extends StatelessWidget {
       ),
       builder: (_) {
         return RTLWrapper(
-          child: BookingBottomSheet(analysis: analysis, labId: labId),
+          child: AnalysisDetailsSheet(analysis: analysis, labName: labName),
         );
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AnalysesCubit>();
@@ -47,7 +47,7 @@ class AnalysisCard extends StatelessWidget {
         return InkWell(
           onTap: () {
             if (isSelectionMode) {
-              cubit.toggleSelect(analysis.id);
+              cubit.toggleSelect(analysis.id.toInt());
             } else {
               _showBookingBottomSheet(context);
             }
@@ -55,13 +55,15 @@ class AnalysisCard extends StatelessWidget {
           onLongPress: () {
             if (!isSelectionMode) {
               cubit.toggleSelectionMode(true);
-              cubit.toggleSelect(analysis.id);
+              cubit.toggleSelect(analysis.id.toInt());
             }
           },
           borderRadius: BorderRadius.circular(16),
           child: Container(
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.accent.withOpacity(0.2) : Colors.white,
+              color: isSelected
+                  ? AppColors.accent.withOpacity(0.2)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(16),
               border: isSelected
                   ? Border.all(color: AppColors.primary, width: 2)
@@ -85,7 +87,11 @@ class AnalysisCard extends StatelessWidget {
                         CircleAvatar(
                           radius: 18,
                           backgroundColor: AppColors.accent,
-                          child: const Icon(Icons.biotech, color: Colors.white, size: 20),
+                          child: const Icon(
+                            Icons.biotech,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -126,17 +132,19 @@ class AnalysisCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                    // اختياري: فراغ بسيط أسفل المحتوى حتى ما يتقاطع مع الـ Checkbox
+                    if (isSelectionMode) const SizedBox(height: 8),
                   ],
                 ),
 
-                // Checkbox يظهر فقط في وضع التحديد
+                // ✅ Checkbox في أسفل يمين
                 if (isSelectionMode)
                   Positioned(
-                    top: 0,
+                    bottom: 0,
                     right: 0,
                     child: Checkbox(
                       value: isSelected,
-                      onChanged: (_) => cubit.toggleSelect(analysis.id),
+                      onChanged: (_) => cubit.toggleSelect(analysis.id.toInt()),
                       activeColor: AppColors.primary,
                     ),
                   ),
