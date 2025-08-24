@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/cubit/login_cubit/login_state.dart';
 import 'package:midical_laboratory/models/login_request_model.dart';
-import 'package:midical_laboratory/services/log_in_service.dart';
+import 'package:midical_laboratory/services/auth/log_in_service.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(InitialState());

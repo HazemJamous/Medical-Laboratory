@@ -5,14 +5,43 @@ import 'package:midical_laboratory/services/analayse/analyses_service.dart';
 part 'analyses_state.dart';
 
 class AnalysesCubit extends Cubit<AnalysesState> {
-  AnalysesCubit(this.lab_id) : super(AnalysesLoading());
-  int lab_id;
+  AnalysesCubit() : super(AnalysesInitial());
+  // final int labId;
+
   List<AnalayseModel> allAnalysesById = [];
-  Future getAllAnalysesById() async {
+
+  bool isSelectionMode = false;
+  List<int> selectedIds = [];
+
+  void toggleSelectionMode(bool enable) {
+    isSelectionMode = enable;
+    if (!enable) selectedIds.clear();
+    emit(
+      SelectionModeChanged(
+        isSelectionMode: isSelectionMode,
+        selectedIds: selectedIds,
+      ),
+    );
+  }
+
+  void toggleSelect(int id) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    emit(
+      SelectionModeChanged(
+        isSelectionMode: isSelectionMode,
+        selectedIds: List.from(selectedIds),
+      ),
+    );
+  }
+
+  Future getAllAnalysesById(int labId) async {
     print("before loading");
     emit(AnalysesLoading());
-    allAnalysesById =
-        await AnalysesService.getAllAnalyses(lab_id) ?? [];
+    allAnalysesById = await AnalysesService.getAllAnalyses(labId) ?? [];
     emit(AnalysesLoaded());
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/cubit/register_cubit/register_state.dart';
 import 'package:midical_laboratory/models/register_request_model.dart';
-import 'package:midical_laboratory/services/register_service.dart';
+import 'package:midical_laboratory/services/auth/register_service.dart';
 
 class RegisterCubit extends Cubit<RegisterState> {
   RegisterCubit() : super(InitialState());

@@ -1,12 +1,19 @@
+// analyses_cubit.dart
+
 part of 'analyses_cubit.dart';
 
+abstract class AnalysesState {}
 
-sealed class AnalysesState {}
+class AnalysesInitial extends AnalysesState {}
 
-final class AnalysesLoading extends AnalysesState {}
+class AnalysesLoading extends AnalysesState {}
 
-final class AnalysesLoaded extends AnalysesState {}
+class AnalysesLoaded extends AnalysesState {}
 
-final class AnalysesFailure extends AnalysesState {}
+class AnalysesFailure extends AnalysesState {}
 
-
+class SelectionModeChanged extends AnalysesState {
+  final bool isSelectionMode;
+  final List<int> selectedIds;
+  SelectionModeChanged({required this.isSelectionMode, required this.selectedIds});
+}
