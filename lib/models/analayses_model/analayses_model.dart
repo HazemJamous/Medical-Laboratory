@@ -6,7 +6,7 @@ AnalayseModel analayseModelFromMap(String str) =>
 String analayseModelToMap(AnalayseModel data) => json.encode(data.toMap());
 
 class AnalayseModel {
-  final num id;
+  final int id;
   final String labAnalysesName;
   final String preconditions;
   final num price;
@@ -19,7 +19,7 @@ class AnalayseModel {
   });
 
   AnalayseModel copyWith({
-    num? id,
+    int? id,
     String? labAnalysesName,
     String? preconditions,
     num? price,

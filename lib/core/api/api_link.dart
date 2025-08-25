@@ -8,6 +8,9 @@ abstract final class ApiLink {
   static const allEvaluation = '$baseApiUrl/allEvaluation';
   static const availableAppointments = '$baseApiUrl/labs';
   static const allAnalyses = '$baseApiUrl/labById';
+  static const rateAndReview = '$baseApiUrl/patientPutUpdateRateReveiw';
+  static const bookAppointment = '$baseApiUrl/bookAppointment';
+
 
   // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
   // "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",

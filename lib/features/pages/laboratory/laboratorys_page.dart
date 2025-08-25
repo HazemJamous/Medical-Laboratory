@@ -21,7 +21,6 @@ class _LabsPageState extends State<LabsPage> {
   @override
   void initState() {
     super.initState();
-    // أول ما تفتح الصفحة، جيب كل المخابر
     context.read<LabSearchCubit>().getLabs(null, filterOptions);
   }
 

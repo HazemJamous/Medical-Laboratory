@@ -1,37 +1,35 @@
 import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
-import 'package:midical_laboratory/models/booking_appointments/request_booking_model.dart';
+import 'package:midical_laboratory/models/all_evaluation/rate_review_request_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BookAppointmentService {
-  static Future<bool> bookAppointment(
-    BookingAppointmentRequestModel request,
-  ) async {
+class RateReviewService {
+  static Future<bool> submitReview(RateReviewRequestModel request) async {
     Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("token") ?? "";
+      String token = prefs.getString("token") ?? "";
 
-      print("Booking Appointment: ${request.toMap()}");
+      print("Submitting review: ${request.toMap()}");
 
-      final response = await dio.post(
-        ApiLink.bookAppointment,
+      Response response = await dio.post(
+        ApiLink.rateAndReview,
         data: request.toMap(),
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
-      print("Appointment Response: ${response.data}");
+      print("RateReviewService Response: ${response.data}");
 
       if (response.statusCode == 200 && response.data["status"] == 1) {
         return true;
       } else {
-        print("Appointment Failed: ${response.data}");
+        print("RateReviewService Failed: ${response.data}");
         return false;
       }
     } catch (e) {
-      print("Appointment Error: $e");
+      print("RateReviewService Error: $e");
       return false;
     }
   }
