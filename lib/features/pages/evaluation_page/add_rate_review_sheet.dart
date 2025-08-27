@@ -53,7 +53,7 @@ class _AddReviewSheetState extends State<AddReviewSheet>
       return;
     }
 
-    cubit.submitReview(_rating, reviewText);
+    cubit.submitReviewCubit(_rating, reviewText);
   }
 
   @override
@@ -110,7 +110,6 @@ class _AddReviewSheetState extends State<AddReviewSheet>
               ),
               const SizedBox(height: 8),
               RatingBar.builder(
-                
                 minRating: 1,
                 allowHalfRating: true,
                 itemCount: 5,

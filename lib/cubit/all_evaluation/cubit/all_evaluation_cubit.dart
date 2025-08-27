@@ -11,7 +11,6 @@ class AllEvaluationCubit extends Cubit<AllEvaluationState> {
   final int labId;
   List<AllEvaluationsModel> allEvaluationService = [];
 
-
   Future<void> getAllEvaluationsById() async {
     try {
       emit(AllEvaluationLoading());
@@ -23,16 +22,15 @@ class AllEvaluationCubit extends Cubit<AllEvaluationState> {
     }
   }
 
-
-  Future<void> submitReview(num rate, String review) async {
+  Future<void> submitReviewCubit(num rate, String review) async {
     emit(AddReviewLoading());
 
     final request = RateReviewRequestModel(
       labId: labId,
       rate: rate,
-      review: review,
+      review: review, 
     );
-    
+
     final success = await RateReviewService.submitReview(request);
 
     if (success) {
