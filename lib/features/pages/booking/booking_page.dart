@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_cubit.dart';
+import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_state.dart';
 import 'package:midical_laboratory/cubit/book_appointment_cubit/cubit/book_appointment_cubit.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/models/booking_appointments/get_available_appointments_model.dart';
 import 'package:midical_laboratory/models/booking_appointments/request_booking_model.dart';
 import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 import 'package:midical_laboratory/shared/widgets/custom_form_filed.dart';
-import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 
 class BookingBottomSheetWrapper {
   static Future<bool?> show(
     BuildContext context,
     int labId, {
+    List<int>? selectedIds, // ✅ IDs من صفحة التحاليل
     AnalayseModel? analysis,
   }) {
     return showModalBottomSheet<bool>(
@@ -30,7 +30,11 @@ class BookingBottomSheetWrapper {
             ),
             BlocProvider(create: (_) => BookAppointmentCubit()),
           ],
-          child: BookingBottomSheet(labId: labId, analysis: analysis),
+          child: BookingBottomSheet(
+            labId: labId,
+            analysis: analysis,
+            preSelectedIds: selectedIds,
+          ),
         );
       },
     );
@@ -40,8 +44,14 @@ class BookingBottomSheetWrapper {
 class BookingBottomSheet extends StatefulWidget {
   final AnalayseModel? analysis;
   final int labId;
+  final List<int>? preSelectedIds; // ✅ IDs المختارة مسبقًا
 
-  const BookingBottomSheet({super.key, this.analysis, required this.labId});
+  const BookingBottomSheet({
+    Key? key,
+    this.analysis,
+    required this.labId,
+    this.preSelectedIds,
+  }) : super(key: key);
 
   @override
   State<BookingBottomSheet> createState() => _BookingBottomSheetState();
@@ -56,8 +66,15 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   AvailableAppointmentsModel? selectedDateTime;
   String? selectedType;
 
-  // قائمة التحاليل المحددة
   List<int> selectedAnalysesIds = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.preSelectedIds != null) {
+      selectedAnalysesIds = List.from(widget.preSelectedIds!);
+    }
+  }
 
   @override
   void dispose() {
@@ -74,7 +91,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       } else {
         selectedAnalysesIds.add(id);
       }
-      print("Selected analyses: $selectedAnalysesIds");
     });
   }
 
@@ -100,7 +116,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       analyses: selectedAnalysesIds,
     );
 
-    print("Booking Request Data: ${req.toMap()}");
     context.read<BookAppointmentCubit>().submit(req);
   }
 
@@ -228,30 +243,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   ),
                   const SizedBox(height: 16),
 
-                  // قائمة التحاليل مع ChoiceChip متعدد
-                  Text(
-                    "اختر التحاليل:",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: widget.analysis != null
-                        ? [
-                            ChoiceChip(
-                              label: Text(widget.analysis!.labAnalysesName),
-                              selected: selectedAnalysesIds.contains(
-                                widget.analysis!.id,
-                              ),
-                              onSelected: (_) =>
-                                  _toggleAnalysis(widget.analysis!.id),
-                              selectedColor: Colors.green.shade50,
-                            ),
-                          ]
-                        : [],
-                  ),
-                  const SizedBox(height: 16),
-
                   // Form الحقول
                   Form(
                     key: _formKey,
@@ -288,7 +279,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         // زر الحجز
                         CustomButton(
                           text: "حجز موعد",
-                          function: isSubmitting ? () {} : _submitBooking,
+                          function: isSubmitting ? null : _submitBooking,
                           isLoading: isSubmitting,
                         ),
                       ],

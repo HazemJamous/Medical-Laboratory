@@ -1,5 +1,3 @@
-// analyses_cubit.dart
-
 part of 'analyses_cubit.dart';
 
 abstract class AnalysesState {}
@@ -14,6 +12,10 @@ class AnalysesFailure extends AnalysesState {}
 
 class SelectionModeChanged extends AnalysesState {
   final bool isSelectionMode;
-  final List<num> selectedIds;
-  SelectionModeChanged({required this.isSelectionMode, required this.selectedIds});
+  final List<int> selectedIds; // ✅ عدلناها int بدل num
+
+  SelectionModeChanged({
+    required this.isSelectionMode,
+    required this.selectedIds,
+  });
 }

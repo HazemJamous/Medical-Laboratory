@@ -6,12 +6,11 @@ part 'analyses_state.dart';
 
 class AnalysesCubit extends Cubit<AnalysesState> {
   AnalysesCubit() : super(AnalysesInitial());
-  // final int labId;
 
   List<AnalayseModel> allAnalysesById = [];
 
   bool isSelectionMode = false;
-  List<num> selectedIds = [];
+  List<int> selectedIds = []; // ✅ خليها int
 
   void toggleSelectionMode(bool enable) {
     isSelectionMode = enable;
@@ -38,12 +37,9 @@ class AnalysesCubit extends Cubit<AnalysesState> {
     );
   }
 
-  Future getAllAnalysesById(int labId) async {
-    print("before loading");
+  Future<void> getAllAnalysesById(int labId) async {
     emit(AnalysesLoading());
     allAnalysesById = await AnalysesService.getAllAnalyses(labId) ?? [];
     emit(AnalysesLoaded());
-    print(" ====== length ===== ${allAnalysesById.length}");
-    print("--------after loaded------");
   }
 }

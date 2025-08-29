@@ -1,3 +1,4 @@
+// services/book_appointment/book_appointment_service.dart
 import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
@@ -5,39 +6,53 @@ import 'package:midical_laboratory/models/booking_appointments/request_booking_m
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BookAppointmentService {
-  static Future<bool> bookAppointment(BookingAppointmentRequestModel request) async {
-    Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
+  static Future<bool> bookAppointment(
+    BookingAppointmentRequestModel request,
+  ) async {
+    final dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
 
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String token = prefs.getString("token") ?? "";
-      if (token.isEmpty) throw Exception("Token not found");
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token") ?? "";
 
-      print("Booking Appointment: ${request.toMap()}");
+      final headers = {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json', // ✅ مهم للـ Laravel/Sanctum
+        'Content-Type': 'application/json',
+      };
+
+      final data = request.toMap();
+      // print("Booking Appointment: $data");
 
       final response = await dio.post(
         ApiLink.bookAppointment,
-        data: request.toMap(),
+        data: data,
         options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-          followRedirects: false,
-          validateStatus: (status) => status != null && status < 500,
+          headers: headers,
+          followRedirects: false,            // ✅ لا تتبع 302
+          validateStatus: (_) => true,       // نفحص يدوياً
         ),
       );
 
-      print("BookAppointment Response: ${response.statusCode} | ${response.data}");
+      final sc = response.statusCode ?? 0;
 
-      if (response.statusCode == 200 && response.data["status"] == 1) {
-        return true;
-      } else if (response.statusCode == 302) {
-        print("Redirect detected, possibly invalid token.");
+      if (sc == 200) {
+        final respData = response.data;
+        if (respData is Map && respData["status"] == 1) {
+          return true;
+        } else {
+          // print("BookAppointment Failed Body: $respData");
+          return false;
+        }
+      } else if (sc == 302) {
+        // print("Redirect detected (302). Likely invalid token or unauthenticated.");
         return false;
       } else {
-        print("Booking Failed: ${response.data}");
+        // print("BookAppointment HTTP $sc | ${response.data}");
         return false;
       }
     } catch (e) {
-      print("Booking Error: $e");
+      // print("Appointment Error: $e");
       return false;
     }
   }
