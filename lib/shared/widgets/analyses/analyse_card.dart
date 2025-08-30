@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
-import 'package:midical_laboratory/cubit/analyses_cubit/cubit/analyses_cubit.dart';
+import 'package:midical_laboratory/cubit/analyses_cubit/analyses_cubit.dart';
 import 'package:midical_laboratory/features/pages/booking/analysis_details_sheet.dart';
 import 'package:midical_laboratory/features/pages/booking/booking_sheet.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';

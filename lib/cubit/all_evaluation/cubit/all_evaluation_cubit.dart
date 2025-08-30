@@ -28,7 +28,7 @@ class AllEvaluationCubit extends Cubit<AllEvaluationState> {
     final request = RateReviewRequestModel(
       labId: labId,
       rate: rate,
-      review: review, 
+      review: review,
     );
 
     final success = await RateReviewService.submitReview(request);

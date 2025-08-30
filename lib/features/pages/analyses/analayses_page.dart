@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
-import 'package:midical_laboratory/cubit/analyses_cubit/cubit/analyses_cubit.dart';
+import 'package:midical_laboratory/cubit/analyses_cubit/analyses_cubit.dart';
 import 'package:midical_laboratory/features/pages/booking/booking_page.dart';
 import 'package:midical_laboratory/shared/widgets/analyses/analyse_card.dart';
 import 'package:midical_laboratory/shared/widgets/right_to_left.dart';

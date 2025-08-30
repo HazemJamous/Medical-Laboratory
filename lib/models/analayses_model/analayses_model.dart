@@ -10,12 +10,16 @@ class AnalayseModel {
   final String labAnalysesName;
   final String preconditions;
   final num price;
+  double? xPosition;
+  double? yPosition;
 
   AnalayseModel({
     required this.id,
     required this.labAnalysesName,
     required this.preconditions,
     required this.price,
+    this.xPosition,
+    this.yPosition,
   });
 
   AnalayseModel copyWith({
