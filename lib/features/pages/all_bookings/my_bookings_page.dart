@@ -6,8 +6,8 @@ import 'package:midical_laboratory/cubit/results_cubit/cubit/results_cubit.dart'
 import 'package:midical_laboratory/features/pages/all_bookings/results_of_bookings_page.dart';
 import 'package:midical_laboratory/shared/widgets/my_bookings_card.dart';
 
-class MyTestsPage extends StatelessWidget {
-  const MyTestsPage({super.key});
+class MyBookingsPage extends StatelessWidget {
+  const MyBookingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class MyTestsPage extends StatelessWidget {
       create: (_) => MyBookingsCubit()..getMyBookingsNavBar(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("اختباراتي السابقة"),
+          title: const Text("مواعيدي القادمة"),
           backgroundColor: AppColors.accent,
         ),
         body: BlocBuilder<MyBookingsCubit, MyBookingsState>(
@@ -24,38 +24,35 @@ class MyTestsPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is MyBookingsLoaded) {
               final now = DateTime.now();
-              final past = state.bookings
-                  .where((b) => b.dateTime.isBefore(now))
+              final upcoming = state.bookings
+                  .where((b) => b.dateTime.isAfter(now))
                   .toList();
 
-              if (past.isEmpty) {
-                return const Center(child: Text("لا يوجد مواعيد منتهية"));
+              if (upcoming.isEmpty) {
+                return const Center(child: Text("لا يوجد مواعيد قادمة"));
               }
 
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
-                itemCount: past.length,
+                itemCount: upcoming.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  return Opacity(
-                    opacity: 0.6, // 🔑 تعطي إحساس إنه الكارد "منتهي"
-                    child: MyBookingsCard(
-                      booking: past[index],
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => BlocProvider(
-                              create: (_) =>
-                                  ResultsCubit()
-                                    ..getResults(past[index].appointmentId),
-                              child: ResultsOfBookingsPage(
-                                booking: past[index],
-                              ),
+                  return MyBookingsCard(
+                    booking: upcoming[index],
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => BlocProvider(
+                            create: (_) =>
+                                ResultsCubit()
+                                  ..getResults(upcoming[index].appointmentId),
+                            child: ResultsOfBookingsPage(
+                              booking: upcoming[index],
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   );
                 },
               );

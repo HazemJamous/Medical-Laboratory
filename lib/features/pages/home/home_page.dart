@@ -117,67 +117,86 @@ class HomePage extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Center(
-                child: Text(
-                  "مرحباً بك في تطبيق \n Medical Laboratory👋",
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.biotech_rounded,
+                    color: AppColors.primary,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  "Medical Laboratory",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
-                  textAlign: TextAlign.right,
                 ),
-              ),
+                const SizedBox(height: 6),
+                Text(
+                  "Connecting Patients with Labs",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.85),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ),
-          ListTile(
-            leading: IconButton(
-              icon: Icon(Icons.logout, color: AppColors.primary),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-                print("تم تسجيل الخروج");
-              },
-            ),
-            title: const Text(
-              "تسجيل خروج",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-          ListTile(
-            leading: IconButton(
-              icon: Icon(Icons.settings, color: AppColors.primary),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-                print("تم تسجيل الخروج");
-              },
-            ),
-            title: const Text(
-              "الإعدادات",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-          ),
-          ListTile(
-            leading: IconButton(
-              icon: Icon(Icons.person, color: AppColors.primary),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-                print("تم تسجيل الخروج");
-              },
-            ),
-            title: const Text(
-              "الملف الشخصي",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.person, color: AppColors.primary),
+                  title: const Text(
+                    "الملف الشخصي",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    // TODO: الانتقال للملف الشخصي
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.settings, color: AppColors.primary),
+                  title: const Text(
+                    "الإعدادات",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    // TODO: الانتقال للإعدادات
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout, color: AppColors.primary),
+                  title: const Text(
+                    "تسجيل خروج",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],
