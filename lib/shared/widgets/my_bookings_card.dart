@@ -6,7 +6,7 @@ import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.da
 class MyBookingsCard extends StatefulWidget {
   final MyBokingsModel booking;
 
-  /// callbacks
+  /// Callbacks
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -75,7 +75,7 @@ class _MyBookingsCardState extends State<MyBookingsCard> {
       case 'اليوم':
         return Colors.orange;
       case 'منتهي':
-        return Colors.black87; // 🟢 صار أسود أنيق بدل الرمادي
+        return Colors.black87;
       default:
         return AppColors.accent;
     }
@@ -110,6 +110,7 @@ class _MyBookingsCardState extends State<MyBookingsCard> {
     final relative = _relativeTime(dt);
     final status = _statusLabel(dt);
     final statusColor = _statusColor(dt);
+    final bool isUpcoming = status != 'منتهي';
 
     return AnimatedScale(
       duration: const Duration(milliseconds: 120),
@@ -195,9 +196,7 @@ class _MyBookingsCardState extends State<MyBookingsCard> {
                         color: Colors.black87,
                       ),
                     ),
-
                     const SizedBox(height: 6),
-
                     Row(
                       children: [
                         Icon(
@@ -237,9 +236,7 @@ class _MyBookingsCardState extends State<MyBookingsCard> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
                     Row(
                       children: [
                         Text(
@@ -275,31 +272,32 @@ class _MyBookingsCardState extends State<MyBookingsCard> {
 
               const SizedBox(width: 10),
 
-              // أيقونات التحكم
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Material(
-                    color: AppColors.accent.withOpacity(0.12),
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      tooltip: 'تعديل الموعد',
-                      onPressed: widget.onEdit,
-                      icon: Icon(Icons.edit, color: AppColors.accent),
+              // أيقونات التحكم (فقط إذا الموعد غير منتهي)
+              if (isUpcoming)
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Material(
+                      color: AppColors.accent.withOpacity(0.12),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: 'تعديل الموعد',
+                        onPressed: widget.onEdit,
+                        icon: Icon(Icons.edit, color: AppColors.accent),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Material(
-                    color: Colors.red.withOpacity(0.12),
-                    shape: const CircleBorder(),
-                    child: IconButton(
-                      tooltip: 'إلغاء الموعد',
-                      onPressed: _confirmDelete,
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                    const SizedBox(height: 8),
+                    Material(
+                      color: Colors.red.withOpacity(0.12),
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: 'إلغاء الموعد',
+                        onPressed: _confirmDelete,
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

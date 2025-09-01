@@ -1,4 +1,3 @@
-// lib/shared/widgets/results/result_card.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
@@ -6,15 +5,9 @@ import 'package:midical_laboratory/models/my_bookings_model/results_bookings_app
 
 class ResultCard extends StatelessWidget {
   final ResultsBookingsAppointmentModel item;
-  final VoidCallback? onView; // فتح التفاصيل (BottomSheet)
-  final VoidCallback? onDownloadPdf; // توليد وتحميل PDF (كل النتائج)
+  final VoidCallback? onView;
 
-  const ResultCard({
-    Key? key,
-    required this.item,
-    this.onView,
-    this.onDownloadPdf,
-  }) : super(key: key);
+  const ResultCard({super.key, required this.item, this.onView});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +16,6 @@ class ResultCard extends StatelessWidget {
     final String formatted = hasValue
         ? NumberFormat('#,##0.##', 'en').format(value)
         : 'غير متوفر';
-
     final Color valueColor = hasValue ? AppColors.accent : Colors.grey;
 
     return Container(
@@ -53,7 +45,6 @@ class ResultCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +64,6 @@ class ResultCard extends StatelessWidget {
               ],
             ),
           ),
-
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -92,30 +82,17 @@ class ResultCard extends StatelessWidget {
                     color: valueColor,
                   ),
                 ),
-                const SizedBox(height: 4),
               ],
             ),
           ),
-
           const SizedBox(width: 6),
-
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                tooltip: hasValue ? 'عرض' : 'لا توجد نتيجة للعرض',
-                icon: Icon(
-                  Icons.remove_red_eye,
-                  color: hasValue ? Colors.grey : Colors.grey.shade400,
-                ),
-                onPressed: hasValue ? onView : null,
-              ),
-              IconButton(
-                tooltip: 'تحميل PDF (كل نتائج الموعد)',
-                icon: const Icon(Icons.picture_as_pdf, color: AppColors.accent),
-                onPressed: onDownloadPdf,
-              ),
-            ],
+          IconButton(
+            tooltip: hasValue ? 'عرض' : 'لا توجد نتيجة للعرض',
+            icon: Icon(
+              Icons.remove_red_eye,
+              color: hasValue ? Colors.grey : Colors.grey.shade400,
+            ),
+            onPressed: hasValue ? onView : null,
           ),
         ],
       ),

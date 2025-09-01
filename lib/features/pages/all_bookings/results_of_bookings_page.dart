@@ -2,18 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/services.dart'; // للنسخ للحافظة
+import 'package:flutter/services.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/results_cubit/cubit/results_cubit.dart';
 import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.dart';
 import 'package:midical_laboratory/models/my_bookings_model/results_bookings_appointment_model.dart';
 import 'package:midical_laboratory/services/my_bookings/result_pdf_convert_service.dart';
-
-// استدعاء خدمة الـ PDF (المسار المعدل)
-
 import 'package:midical_laboratory/shared/widgets/result_card.dart';
-
-// استدعاء الـ ResultCard (المسار المعدل)
 
 class ResultsOfBookingsPage extends StatelessWidget {
   final MyBokingsModel booking;
@@ -32,24 +27,30 @@ class ResultsOfBookingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('نتائج الفحص'),
-        backgroundColor: AppColors.accent,
-        centerTitle: true,
-        actions: [
-          BlocBuilder<ResultsCubit, ResultsState>(
-            builder: (context, state) {
-              if (state is ResultsLoaded) {
-                return IconButton(
-                  tooltip: 'تحميل كل النتائج PDF',
-                  icon: const Icon(Icons.picture_as_pdf),
-                  onPressed: () =>
-                      _exportAllAsPdf(context, booking, state.results),
-                );
-              }
-              return const SizedBox.shrink();
-            },
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary,
+                AppColors.accent,
+                AppColors.accentLight,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ],
+        ),
+        elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'نتائج التحاليل',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Column(
         children: [
@@ -57,7 +58,6 @@ class ResultsOfBookingsPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: _Header(booking: booking),
           ),
-
           Expanded(
             child: BlocBuilder<ResultsCubit, ResultsState>(
               builder: (context, state) {
@@ -79,7 +79,6 @@ class ResultsOfBookingsPage extends StatelessWidget {
                   );
                 } else if (state is ResultsLoaded) {
                   final allItems = state.results;
-
                   final visible = allItems.where((r) {
                     final double? v = r.result;
                     return v != null && !v.isNaN;
@@ -103,29 +102,65 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     );
                   }
 
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      await context.read<ResultsCubit>().getResults(
-                        booking.appointmentId,
-                      );
-                    },
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+                  // ✅ القائمة مع زر PDF أسفل النتائج
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: RefreshIndicator(
+                          onRefresh: () async {
+                            await context.read<ResultsCubit>().getResults(
+                              booking.appointmentId,
+                            );
+                          },
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            itemCount: visible.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(height: 12),
+                            itemBuilder: (context, index) {
+                              final r = visible[index];
+                              return ResultCard(
+                                item: r,
+                                onView: () => _showResultDetail(context, r),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                      itemCount: visible.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final r = visible[index];
-                        return ResultCard(
-                          item: r,
-                          onView: () => _showResultDetail(context, r),
-                          onDownloadPdf: () =>
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                        child: ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.picture_as_pdf,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            'تحميل النتائج كـ PDF',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade700,
+                            minimumSize: const Size.fromHeight(55),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 4,
+                          ),
+                          onPressed: () =>
                               _exportAllAsPdf(context, booking, allItems),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    ],
                   );
                 } else {
                   return const SizedBox.shrink();
@@ -226,17 +261,13 @@ class ResultsOfBookingsPage extends StatelessWidget {
                               color: AppColors.accent.withOpacity(0.18),
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Text(
-                                formatted,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: AppColors.accent,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            formatted,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.accent,
+                            ),
                           ),
                         ),
                       ],
@@ -282,9 +313,7 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 18),
-
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -297,7 +326,6 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                   ),
                 ),
-
                 const SizedBox(height: 18),
               ],
             ),
@@ -376,11 +404,12 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
+          // ✅ زر تحديث النتائج داخل الكارد
           IconButton(
+            tooltip: 'تحديث النتائج',
+            icon: const Icon(Icons.refresh, color: AppColors.accent),
             onPressed: () =>
                 context.read<ResultsCubit>().getResults(booking.appointmentId),
-            icon: const Icon(Icons.refresh, color: AppColors.accent),
-            tooltip: 'تحديث',
           ),
         ],
       ),
