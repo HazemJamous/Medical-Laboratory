@@ -20,7 +20,6 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
   @override
   void initState() {
     super.initState();
-    // عندما يتغير نص البحث نعيد بناء الواجهة لعرض الفلترة
     _searchController.addListener(() => setState(() {}));
   }
 
@@ -28,13 +27,6 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  Future<void> _refresh() async {
-    // أفترض أن الدالة تعيد Future؛ إن لم تكن تعيد Future فغيّر ذلك في الكيوبت
-    await context.read<AdvertismentCubit>().getAdvertismentCubit();
-    // إضافة تأخير بسيط ليستحسن رؤية الـ RefreshIndicator (اختياري)
-    await Future.delayed(const Duration(milliseconds: 200));
   }
 
   @override
@@ -49,11 +41,9 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
               body: Center(child: CircularProgressIndicator()),
             );
           } else if (state is AdvertismentLoadedState) {
-            // الحصول على قائمة الإعلانات من الكيوبت كما في كودك الأصلي
             final List<AdvertismentModel> adverts =
                 context.read<AdvertismentCubit>().advertService ?? [];
 
-            // فلترة بسيطة بالبحث (العنوان، الوصف، واسم المختبر)
             final query = _searchController.text.trim().toLowerCase();
             final filtered = query.isEmpty
                 ? adverts
@@ -66,11 +56,8 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
 
             return Scaffold(
               appBar: PreferredSize(
-                preferredSize: const Size.fromHeight(80),
+                preferredSize: const Size.fromHeight(60),
                 child: AppBar(
-                  elevation: 0,
-                  centerTitle: true,
-                  automaticallyImplyLeading: true,
                   flexibleSpace: Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -84,6 +71,8 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
                       ),
                     ),
                   ),
+                  elevation: 0,
+                  centerTitle: true,
                   title: const Text(
                     'الإعلانات',
                     style: TextStyle(
@@ -98,91 +87,94 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
               body: SafeArea(
                 child: Directionality(
                   textDirection: TextDirection.rtl,
-                  child: RefreshIndicator(
-                    onRefresh: _refresh,
-                    child: Column(
-                      children: [
-                        // Search field
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 12,
-                          ),
-                          child: Material(
-                            elevation: 2,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      // Search field like LabsPage
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            child: TextField(
-                              controller: _searchController,
-                              textDirection: TextDirection.rtl,
-                              decoration: InputDecoration(
-                                hintText: 'ابحث عن إعلان أو مختبر...',
-                                hintStyle: AppTextStyle.style2.copyWith(
-                                  fontSize: 14,
-                                ),
-                                prefixIcon: const Icon(Icons.search),
-                                suffixIcon: _searchController.text.isNotEmpty
-                                    ? IconButton(
-                                        icon: const Icon(Icons.close),
-                                        onPressed: () {
-                                          _searchController.clear();
-                                        },
-                                      )
-                                    : null,
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                  horizontal: 12,
-                                ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 6,
                               ),
+                            ],
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: 'ابحث عن إعلان أو مختبر...',
+                              hintStyle: AppTextStyle.style2.copyWith(
+                                fontSize: 14,
+                                color: Colors.grey[600],
+                              ),
+                              border: InputBorder.none,
+                              icon: const Icon(
+                                Icons.search,
+                                color: AppColors.primary,
+                              ),
+                              suffixIcon: _searchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: AppColors.primary,
+                                      ),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                      },
+                                    )
+                                  : null,
                             ),
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 16),
 
-                        // محتوى القائمة
-                        Expanded(
-                          child: filtered.isEmpty
-                              ? ListView(
-                                  // ListView حتى يعمل RefreshIndicator عند الفراغ
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 36,
-                                  ),
-                                  children: [
-                                    Icon(
-                                      Icons.announcement_outlined,
-                                      size: 72,
-                                      color: AppColors.primary.withOpacity(0.9),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'لا توجد إعلانات مطابقة',
-                                      textAlign: TextAlign.center,
-                                      style: AppTextStyle.style2.copyWith(
-                                        fontSize: 16,
-                                        color: AppColors.textColor,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : ListView.separated(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 16,
-                                  ),
-                                  itemCount: filtered.length,
-                                  separatorBuilder: (_, __) =>
-                                      const SizedBox(height: 12),
-                                  itemBuilder: (context, index) {
-                                    final ad = filtered[index];
-                                    return AdvertCard(ad: ad);
-                                  },
+                      // Content list
+                      Expanded(
+                        child: filtered.isEmpty
+                            ? ListView(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 36,
                                 ),
-                        ),
-                      ],
-                    ),
+                                children: [
+                                  Icon(
+                                    Icons.announcement_outlined,
+                                    size: 72,
+                                    color: AppColors.primary.withOpacity(0.9),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'لا توجد إعلانات مطابقة',
+                                    textAlign: TextAlign.center,
+                                    style: AppTextStyle.style2.copyWith(
+                                      fontSize: 16,
+                                      color: AppColors.textColor,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : ListView.separated(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                  horizontal: 16,
+                                ),
+                                itemCount: filtered.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final ad = filtered[index];
+                                  return AdvertCard(ad: ad);
+                                },
+                              ),
+                      ),
+                    ],
                   ),
                 ),
               ),
