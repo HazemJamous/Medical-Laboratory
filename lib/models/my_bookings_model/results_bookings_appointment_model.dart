@@ -8,7 +8,7 @@ String resultsBookingsAppointmentModelToMap(ResultsBookingsAppointmentModel data
 class ResultsBookingsAppointmentModel {
     final int analysisId;
     final String analysisName;
-    final String result;
+    final double result;
 
     ResultsBookingsAppointmentModel({
         required this.analysisId,
@@ -19,7 +19,7 @@ class ResultsBookingsAppointmentModel {
     ResultsBookingsAppointmentModel copyWith({
         int? analysisId,
         String? analysisName,
-        String? result,
+        double? result,
     }) => 
         ResultsBookingsAppointmentModel(
             analysisId: analysisId ?? this.analysisId,
