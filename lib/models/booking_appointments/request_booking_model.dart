@@ -3,13 +3,11 @@ import 'package:intl/intl.dart';
 
 BookingAppointmentRequestModel bookingAppointmentRequestModelFromMap(
   String str,
-) =>
-    BookingAppointmentRequestModel.fromMap(json.decode(str));
+) => BookingAppointmentRequestModel.fromMap(json.decode(str));
 
 String bookingAppointmentRequestModelToMap(
   BookingAppointmentRequestModel data,
-) =>
-    json.encode(data.toMap());
+) => json.encode(data.toMap());
 
 class BookingAppointmentRequestModel {
   final String type; // IN_LAB / IN_HOME
@@ -19,6 +17,8 @@ class BookingAppointmentRequestModel {
   final int labId;
   final DateTime dateTime;
   final List<int> analyses;
+  double? latitude;
+  double? longitude;
 
   BookingAppointmentRequestModel({
     required this.type,
@@ -28,6 +28,8 @@ class BookingAppointmentRequestModel {
     required this.labId,
     required this.dateTime,
     required this.analyses,
+    this.latitude,
+    this.longitude,
   });
 
   BookingAppointmentRequestModel copyWith({
@@ -38,16 +40,15 @@ class BookingAppointmentRequestModel {
     int? labId,
     DateTime? dateTime,
     List<int>? analyses,
-  }) =>
-      BookingAppointmentRequestModel(
-        type: type ?? this.type,
-        patientName: patientName ?? this.patientName,
-        patientPhone: patientPhone ?? this.patientPhone,
-        patientIdNumber: patientIdNumber ?? this.patientIdNumber,
-        labId: labId ?? this.labId,
-        dateTime: dateTime ?? this.dateTime,
-        analyses: analyses ?? this.analyses,
-      );
+  }) => BookingAppointmentRequestModel(
+    type: type ?? this.type,
+    patientName: patientName ?? this.patientName,
+    patientPhone: patientPhone ?? this.patientPhone,
+    patientIdNumber: patientIdNumber ?? this.patientIdNumber,
+    labId: labId ?? this.labId,
+    dateTime: dateTime ?? this.dateTime,
+    analyses: analyses ?? this.analyses,
+  );
 
   factory BookingAppointmentRequestModel.fromMap(Map<String, dynamic> json) =>
       BookingAppointmentRequestModel(
