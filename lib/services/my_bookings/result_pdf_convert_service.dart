@@ -1,10 +1,9 @@
-// lib/services/pdf/result_pdf_service.dart
 import 'dart:typed_data';
 import 'dart:io' as io;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show rootBundle, Color;
 import 'package:flutter/material.dart'
-    show BuildContext, Color, SnackBar, ScaffoldMessenger;
+    show BuildContext, SnackBar, ScaffoldMessenger;
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -12,27 +11,22 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.dart';
 import 'package:midical_laboratory/models/my_bookings_model/results_bookings_appointment_model.dart';
 
 class ResultPdfService {
-  /// تحويل Flutter Color إلى PdfColor
   static PdfColor _toPdfColor(Color c) => PdfColor.fromInt(c.value);
 
-  /// بناء PDF لكل نتائج الموعد
   static Future<Uint8List> buildResultsPdf({
     required MyBokingsModel booking,
     required List<ResultsBookingsAppointmentModel> results,
   }) async {
-    // تهيئة بيانات locale للتواريخ
     try {
       await initializeDateFormatting('ar', null);
       await initializeDateFormatting('en', null);
     } catch (_) {}
 
-    // تحميل خط Almarai
     final byteData = await rootBundle.load('fonts/Almarai-Regular.ttf');
     final ttf = pw.Font.ttf(byteData);
 
@@ -61,7 +55,6 @@ class ResultPdfService {
           theme: pw.ThemeData.withFont(base: ttf),
         ),
         build: (context) => <pw.Widget>[
-          // Header
           pw.Container(
             padding: const pw.EdgeInsets.all(12),
             decoration: pw.BoxDecoration(
@@ -97,10 +90,7 @@ class ResultPdfService {
               ],
             ),
           ),
-
           pw.SizedBox(height: 14),
-
-          // جدول النتائج
           pw.Table.fromTextArray(
             headers: <String>['الاختبار', 'القيمة'],
             data: tableData.map((row) => [row[0], row[1]]).toList(),
@@ -119,13 +109,11 @@ class ResultPdfService {
               horizontal: 6,
             ),
             columnWidths: {
-              0: const pw.FlexColumnWidth(3), // الاختبار (أوسع)
-              1: const pw.FlexColumnWidth(1), // القيمة (أضيق)
+              0: const pw.FlexColumnWidth(3),
+              1: const pw.FlexColumnWidth(1),
             },
           ),
-
           pw.SizedBox(height: 18),
-
           pw.Text(
             'ملاحظة: للحصول على تفسير النتائج، راجع القيم المرجعية لدى المختبر أو استشر طبيبك.',
             style: pw.TextStyle(
@@ -141,7 +129,6 @@ class ResultPdfService {
     return doc.save();
   }
 
-  /// بناء الملف وحفظه ومشاركته
   static Future<void> saveAndShareResultsPdf({
     required BuildContext context,
     required MyBokingsModel booking,
@@ -152,31 +139,26 @@ class ResultPdfService {
       final fileName =
           'results_${booking.appointmentId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
-      // مشاركة
       await Printing.sharePdf(bytes: bytes, filename: fileName);
 
       if (!kIsWeb) {
-        String path;
-        // حفظ داخل Downloads
+        // مجلد Downloads العام
         final downloadsDir = io.Directory('/storage/emulated/0/Download');
-        if (await downloadsDir.exists()) {
-          path = '${downloadsDir.path}/$fileName';
-        } else {
-          // fallback لو ما في Downloads
-          final docsDir = await getApplicationDocumentsDirectory();
-          path = '${docsDir.path}/$fileName';
+        if (!await downloadsDir.exists()) {
+          await downloadsDir.create(recursive: true);
         }
 
-        final file = io.File(path);
+        final filePath = '${downloadsDir.path}/$fileName';
+        final file = io.File(filePath);
         await file.writeAsBytes(bytes);
 
         try {
-          await OpenFilex.open(path);
+          await OpenFilex.open(filePath);
         } catch (_) {}
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('تم حفظ الملف في: $path')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('تم حفظ الملف في Downloads:\n$filePath')),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

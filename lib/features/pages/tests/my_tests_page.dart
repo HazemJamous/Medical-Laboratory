@@ -4,6 +4,7 @@ import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/my_bookings_cubit/cubit/my_bookings_cubit.dart';
 import 'package:midical_laboratory/cubit/results_cubit/cubit/results_cubit.dart';
 import 'package:midical_laboratory/features/pages/all_bookings/results_of_bookings_page.dart';
+
 import 'package:midical_laboratory/shared/widgets/my_bookings_card.dart';
 
 class MyTestsPage extends StatelessWidget {
@@ -15,8 +16,30 @@ class MyTestsPage extends StatelessWidget {
       create: (_) => MyBookingsCubit()..getMyBookingsNavBar(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("اختباراتي السابقة"),
-          backgroundColor: AppColors.accent,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.accent,
+                  AppColors.accentLight,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            'ارشيف التحاليل',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+              fontSize: 20,
+            ),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: BlocBuilder<MyBookingsCubit, MyBookingsState>(
           builder: (context, state) {
@@ -38,7 +61,7 @@ class MyTestsPage extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   return Opacity(
-                    opacity: 0.6, // 🔑 تعطي إحساس إنه الكارد "منتهي"
+                    opacity: 0.8,
                     child: MyBookingsCard(
                       booking: past[index],
                       onTap: () {
