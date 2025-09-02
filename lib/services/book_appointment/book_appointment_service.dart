@@ -22,31 +22,23 @@ class BookAppointmentService {
       };
 
       final data = request.toMap();
-      // print("Booking Appointment: $data");
 
-      final response = await dio.post(
+      Response response = await dio.post(
         ApiLink.bookAppointment,
         data: data,
         options: Options(
           headers: headers,
-          followRedirects: false,            // ✅ لا تتبع 302
-          validateStatus: (_) => true,       // نفحص يدوياً
+          followRedirects: false, // ✅ لا تتبع 302
+          validateStatus: (_) => true, // نفحص يدوياً
         ),
       );
 
-      final sc = response.statusCode ?? 0;
-
-      if (sc == 200) {
-        final respData = response.data;
-        if (respData is Map && respData["status"] == 1) {
+      if (response.statusCode == 200) {
+        if (response.data is Map && response.data["status"] == 1) {
           return true;
         } else {
-          // print("BookAppointment Failed Body: $respData");
           return false;
         }
-      } else if (sc == 302) {
-        // print("Redirect detected (302). Likely invalid token or unauthenticated.");
-        return false;
       } else {
         // print("BookAppointment HTTP $sc | ${response.data}");
         return false;
