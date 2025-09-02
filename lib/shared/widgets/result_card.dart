@@ -12,11 +12,47 @@ class ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double? value = item.result;
-    final bool hasValue = value != null && !value.isNaN;
+    final bool hasValue = item.hasValue;
     final String formatted = hasValue
         ? NumberFormat('#,##0.##', 'en').format(value)
         : 'غير متوفر';
-    final Color valueColor = hasValue ? AppColors.accent : Colors.grey;
+    final String unit = item.displayUnit.isEmpty ? '' : ' ${item.displayUnit}';
+    final String refRange = item.range == null
+        ? '—'
+        : '${NumberFormat('#,##0.##', 'en').format(item.range!.min)} – ${NumberFormat('#,##0.##', 'en').format(item.range!.max)} ${item.range!.unit ?? ''}';
+
+    Color _statusColor(String s) {
+      switch (s.toLowerCase()) {
+        case 'high':
+          return Colors.red.shade600;
+        case 'low':
+          return Colors.orange.shade700;
+        case 'normal':
+          return Colors.green.shade700;
+        case 'pending':
+          return Colors.blue.shade700;
+        default:
+          return Colors.grey.shade700;
+      }
+    }
+
+    String _statusText(String s) {
+      switch (s.toLowerCase()) {
+        case 'high':
+          return 'مرتفع';
+        case 'low':
+          return 'منخفض';
+        case 'normal':
+          return 'طبيعي';
+        case 'pending':
+          return 'معلّق';
+        default:
+          return s;
+      }
+    }
+
+    final String statusLabel = _statusText(item.computedStatus);
+    final Color statusColor = _statusColor(item.computedStatus);
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -36,12 +72,15 @@ class ResultCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundColor: valueColor.withOpacity(0.12),
+            backgroundColor: AppColors.accent.withOpacity(0.10),
             child: Text(
               item.analysisName.isNotEmpty
                   ? item.analysisName[0].toUpperCase()
                   : '?',
-              style: TextStyle(color: valueColor, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: AppColors.accent,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -51,6 +90,8 @@ class ResultCard extends StatelessWidget {
               children: [
                 Text(
                   item.analysisName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     color: AppColors.pageTitle,
@@ -58,31 +99,34 @@ class ResultCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  hasValue ? 'قيمة الاختبار' : 'قيمة غير متوفرة',
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                  hasValue ? 'قيمة: $formatted$unit' : 'قيمة غير متوفرة',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
+                if (item.range != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'النطاق: $refRange',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
               ],
             ),
           ),
+          const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: valueColor.withOpacity(0.1),
+              color: statusColor.withOpacity(0.10),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: valueColor.withOpacity(0.16)),
+              border: Border.all(color: statusColor.withOpacity(0.35)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  formatted,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                    color: valueColor,
-                  ),
-                ),
-              ],
+            child: Text(
+              statusLabel,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 12,
+                color: statusColor,
+              ),
             ),
           ),
           const SizedBox(width: 6),

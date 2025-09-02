@@ -1,4 +1,3 @@
-// lib/features/pages/my_bookings/results_of_bookings_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -79,10 +78,7 @@ class ResultsOfBookingsPage extends StatelessWidget {
                   );
                 } else if (state is ResultsLoaded) {
                   final allItems = state.results;
-                  final visible = allItems.where((r) {
-                    final double? v = r.result;
-                    return v != null && !v.isNaN;
-                  }).toList();
+                  final visible = allItems.where((r) => r.hasValue).toList();
 
                   if (allItems.isEmpty) {
                     return const Center(
@@ -109,8 +105,8 @@ class ResultsOfBookingsPage extends StatelessWidget {
                         child: RefreshIndicator(
                           onRefresh: () async {
                             await context.read<ResultsCubit>().getResults(
-                              booking.appointmentId,
-                            );
+                                  booking.appointmentId,
+                                );
                           },
                           child: ListView.separated(
                             padding: const EdgeInsets.symmetric(
@@ -195,16 +191,67 @@ class ResultsOfBookingsPage extends StatelessWidget {
     BuildContext context,
     ResultsBookingsAppointmentModel item,
   ) {
-    final formatted = _formatNumber(item.result);
+    final formattedValue = _formatNumber(item.result);
+    final unit = (item.displayUnit.isEmpty ? '' : ' ${item.displayUnit}');
+    final refRange = item.range == null
+        ? '—'
+        : '${_formatNumber(item.range!.min)} – ${_formatNumber(item.range!.max)} ${item.range!.unit ?? ''}';
+
+    Color _statusColor(String s) {
+      switch (s.toLowerCase()) {
+        case 'high':
+          return Colors.red.shade600;
+        case 'low':
+          return Colors.orange.shade700;
+        case 'normal':
+          return Colors.green.shade700;
+        case 'pending':
+          return Colors.blue.shade700;
+        default:
+          return Colors.grey.shade700;
+      }
+    }
+
+    String _statusText(String s) {
+      switch (s.toLowerCase()) {
+        case 'high':
+          return 'مرتفع';
+        case 'low':
+          return 'منخفض';
+        case 'normal':
+          return 'طبيعي';
+        case 'pending':
+          return 'معلّق';
+        default:
+          return s;
+      }
+    }
+
+    Widget _chip(String label, Color color) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color.withOpacity(0.4)),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            ),
+          ),
+        );
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.48,
+        initialChildSize: 0.58,
         maxChildSize: 0.95,
-        minChildSize: 0.32,
+        minChildSize: 0.40,
         builder: (context, ctrl) => Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
@@ -227,14 +274,27 @@ class ResultsOfBookingsPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text(
-                  item.analysisName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.analysisName,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.pageTitle,
+                        ),
+                      ),
+                    ),
+                    _chip(
+                      _statusText(item.computedStatus),
+                      _statusColor(item.computedStatus),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
+
+                // القيمة الأساسية
                 Row(
                   children: [
                     Column(
@@ -262,7 +322,7 @@ class ResultsOfBookingsPage extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            formatted,
+                            '$formattedValue$unit',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w800,
@@ -278,7 +338,7 @@ class ResultsOfBookingsPage extends StatelessWidget {
                         IconButton(
                           tooltip: 'نسخ القيمة',
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: formatted));
+                            Clipboard.setData(ClipboardData(text: '$formattedValue$unit'));
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('تم نسخ القيمة')),
                             );
@@ -298,7 +358,8 @@ class ResultsOfBookingsPage extends StatelessWidget {
                           onPressed: () {
                             Clipboard.setData(
                               ClipboardData(
-                                text: '${item.analysisName}: $formatted',
+                                text:
+                                    '${item.analysisName}: $formattedValue$unit • النطاق: $refRange',
                               ),
                             );
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -313,19 +374,75 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey.withOpacity(0.06)),
+
+                // معلومات مرجعية سريعة
+                _infoGrid([
+                  _InfoRow('النطاق المرجعي', refRange),
+                  _InfoRow('الوحدة', item.displayUnit.isEmpty ? '—' : item.displayUnit),
+                  if ((item.category ?? '').isNotEmpty)
+                    _InfoRow('الفئة', item.category!),
+                ]),
+
+                const SizedBox(height: 10),
+
+                // تفاصيل تقنية
+                _sectionTitle('تفاصيل تقنية'),
+                _infoGrid([
+                  if ((item.method ?? '').isNotEmpty)
+                    _InfoRow('الطريقة', item.method!),
+                  if ((item.specimen ?? '').isNotEmpty)
+                    _InfoRow('نوع العينة', item.specimen!),
+                  if ((item.device ?? '').isNotEmpty)
+                    _InfoRow('الجهاز', item.device!),
+                  if ((item.technician ?? '').isNotEmpty)
+                    _InfoRow('المسؤول', item.technician!),
+                ]),
+
+                const SizedBox(height: 10),
+
+                // أوقات الإجراء
+                _sectionTitle('الأزمنة'),
+                _infoGrid([
+                  _InfoRow('وقت الجمع',
+                      item.collectedAt == null ? '—' : _formatDate(item.collectedAt!)),
+                  _InfoRow('وقت الاستلام',
+                      item.receivedAt == null ? '—' : _formatDate(item.receivedAt!)),
+                  _InfoRow('وقت الإصدار',
+                      item.reportedAt == null ? '—' : _formatDate(item.reportedAt!)),
+                ]),
+
+                const SizedBox(height: 10),
+
+                // بيانات المريض المرتبطة بالنتيجة (إن وُجدت)
+                if (item.patientAgeYears != null || (item.patientGender ?? '').isNotEmpty)
+                  _sectionTitle('بيانات المريض'),
+                if (item.patientAgeYears != null || (item.patientGender ?? '').isNotEmpty)
+                  _infoGrid([
+                    if (item.patientAgeYears != null)
+                      _InfoRow('العمر', '${item.patientAgeYears} سنة'),
+                    if ((item.patientGender ?? '').isNotEmpty)
+                      _InfoRow('الجنس', item.patientGender!),
+                  ]),
+
+                // ملاحظات
+                if ((item.notes ?? '').isNotEmpty) const SizedBox(height: 10),
+                if ((item.notes ?? '').isNotEmpty)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.withOpacity(0.08)),
+                    ),
+                    child: Text(
+                      item.notes!,
+                      style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+                    ),
                   ),
-                  child: Text(
-                    'ملاحظة: قد تحتاج لمعرفة نطاقات القيم المرجعية (Reference Range) لفهم ما إذا كانت هذه القيمة طبيعية. إذا كانت لديك أي شكوك، تواصل مع المختبر أو طبيبك.',
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                  ),
-                ),
+
                 const SizedBox(height: 18),
               ],
             ),
@@ -334,6 +451,86 @@ class ResultsOfBookingsPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _sectionTitle(String t) => Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Text(
+          t,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w800,
+            color: AppColors.pageTitle,
+          ),
+        ),
+      );
+
+  Widget _infoGrid(List<_InfoRow> rows) {
+    final visible = rows.where((r) => r.value.trim().isNotEmpty && r.value != '—').toList();
+    if (visible.isEmpty) {
+      // إن لم توجد معلومات لا نعرض شيئاً
+      return const SizedBox.shrink();
+    }
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.withOpacity(0.06)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final isNarrow = c.maxWidth < 360;
+          final col = isNarrow ? 1 : 2;
+          return Wrap(
+            runSpacing: 10,
+            spacing: 12,
+            children: visible
+                .map((r) => SizedBox(
+                      width: (c.maxWidth - (col - 1) * 12) / col,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              r.label,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            r.value,
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                              fontSize: 13.5,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.pageTitle,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ))
+                .toList(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _InfoRow {
+  final String label;
+  final String value;
+  const _InfoRow(this.label, this.value);
 }
 
 // ---------------- header widget ----------------
@@ -404,7 +601,6 @@ class _Header extends StatelessWidget {
               ],
             ),
           ),
-          // ✅ زر تحديث النتائج داخل الكارد
           IconButton(
             tooltip: 'تحديث النتائج',
             icon: const Icon(Icons.refresh, color: AppColors.accent),
