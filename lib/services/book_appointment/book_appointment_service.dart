@@ -29,8 +29,8 @@ class BookAppointmentService {
         data: data,
         options: Options(
           headers: headers,
-          followRedirects: false,            // ✅ لا تتبع 302
-          validateStatus: (_) => true,       // نفحص يدوياً
+          followRedirects: false, // ✅ لا تتبع 302
+          validateStatus: (_) => true, // نفحص يدوياً
         ),
       );
 

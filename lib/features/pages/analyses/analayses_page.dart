@@ -11,7 +11,7 @@ import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 class AnalysesGridPage extends StatelessWidget {
   final int labId;
   final String labName;
-
+  
   const AnalysesGridPage({Key? key, required this.labId, required this.labName})
     : super(key: key);
 

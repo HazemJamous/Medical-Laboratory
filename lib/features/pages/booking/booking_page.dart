@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+
 import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_cubit.dart';
 import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_state.dart';
 import 'package:midical_laboratory/cubit/book_appointment_cubit/Place/appointment_place_cubit.dart';
@@ -429,7 +430,6 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           },
                         ),
                         const SizedBox(height: 16),
-
                         // Form الحقول
                         Form(
                           key: _formKey,
