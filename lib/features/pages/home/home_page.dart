@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  "Medical Laboratory",
+                  "MatchLab",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,

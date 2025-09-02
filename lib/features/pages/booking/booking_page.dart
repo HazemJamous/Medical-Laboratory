@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+
 import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_cubit.dart';
 import 'package:midical_laboratory/cubit/avalible_appointments_cubit/cubit/availible_appointments_state.dart';
 import 'package:midical_laboratory/cubit/book_appointment_cubit/Place/appointment_place_cubit.dart';
@@ -280,40 +282,38 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                           },
                         ),
                         const SizedBox(height: 16),
-                      ],
-
-                      // Form الحقول
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            NameFormField(
-                              label: "الاسم",
-                              controller: _patientName,
-                              type: TextInputType.name,
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? "الاسم مطلوب"
-                                  : null,
-                            ),
-                            const SizedBox(height: 12),
-                            NameFormField(
-                              label: "رقم الهاتف",
-                              controller: _patientPhone,
-                              type: TextInputType.phone,
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? "رقم الهاتف مطلوب"
-                                  : null,
-                            ),
-                            const SizedBox(height: 12),
-                            NameFormField(
-                              label: "الرقم الوطني",
-                              controller: _patientIdNumber,
-                              type: TextInputType.number,
-                              validator: (v) => v == null || v.trim().isEmpty
-                                  ? "الرقم الوطني مطلوب"
-                                  : null,
-                            ),
-                            const SizedBox(height: 24),
+                        // Form الحقول
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              NameFormField(
+                                label: "الاسم",
+                                controller: _patientName,
+                                type: TextInputType.name,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? "الاسم مطلوب"
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+                              NameFormField(
+                                label: "رقم الهاتف",
+                                controller: _patientPhone,
+                                type: TextInputType.phone,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? "رقم الهاتف مطلوب"
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+                              NameFormField(
+                                label: "الرقم الوطني",
+                                controller: _patientIdNumber,
+                                type: TextInputType.number,
+                                validator: (v) => v == null || v.trim().isEmpty
+                                    ? "الرقم الوطني مطلوب"
+                                    : null,
+                              ),
+                              const SizedBox(height: 24),
 
                             // زر الحجز
                             CustomButton(

@@ -11,14 +11,9 @@ import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 class AnalysesGridPage extends StatelessWidget {
   final int labId;
   final String labName;
-  late double totalPrice;
-
-  AnalysesGridPage({
-    Key? key,
-    required this.labId,
-    required this.labName,
-    // required this.totalPrice,
-  }) : super(key: key);
+  
+  const AnalysesGridPage({Key? key, required this.labId, required this.labName})
+    : super(key: key);
 
   /// يفتح الـ bottom sheet وينتظر نتيجة الحجز
   Future<void> openBookingSheet(
@@ -43,6 +38,10 @@ class AnalysesGridPage extends StatelessWidget {
           context,
         ).showSnackBar(const SnackBar(content: Text('تم الحجز بنجاح')));
       }
+      //
+
+
+      
     }
   }
 

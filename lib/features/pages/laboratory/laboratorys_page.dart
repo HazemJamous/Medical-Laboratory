@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_state.dart';
@@ -71,28 +70,7 @@ class _LabsPageState extends State<LabsPage> {
                     },
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'التقييم الأدنى:',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  RatingBar.builder(
-                    initialRating: filterOptions.rating,
-                    minRating: 0,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    itemCount: 5,
-                    itemBuilder: (context, _) =>
-                        const Icon(Icons.star, color: Colors.amber),
-                    itemSize: 28,
-                    onRatingUpdate: (rating) {
-                      setModalState(() {
-                        filterOptions.rating = rating;
-                      });
-                    },
-                  ),
+           
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -247,4 +225,4 @@ class _LabsPageState extends State<LabsPage> {
   }
 }
 
-void _showFilterOptions(BuildContext context, FilterOptions filterOpt) {}
+// void _showFilterOptions(BuildContext context, FilterOptions filterOpt) {}
