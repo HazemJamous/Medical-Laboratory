@@ -89,7 +89,7 @@ class _SplashPageState extends State<SplashPage>
                 FadeTransition(
                   opacity: _animation,
                   child: Text(
-                    "Medical Laboratory",
+                    "MatchLab",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

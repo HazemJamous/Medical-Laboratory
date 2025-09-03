@@ -1,171 +1,267 @@
-// import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:midical_laboratory/cubit/otp_cubit/cubit/otp_cubit_cubit.dart';
+import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
+import 'package:pinput/pinput.dart';
+import 'package:midical_laboratory/core/constant/app_colors.dart';
+import 'package:midical_laboratory/core/constant/app_text_style.dart';
+import 'package:midical_laboratory/shared/widgets/custom_button.dart';
+import 'package:midical_laboratory/models/otp/otp_request_model.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:midical_laboratory/core/routes.dart';
-// import 'package:midical_laboratory/shared/widgets/custom_button.dart';
+class OtpVerificationPage extends StatefulWidget {
+  final String email;
+  const OtpVerificationPage({Key? key, required this.email}) : super(key: key);
 
-// class OtpView extends StatefulWidget {
-//   final String email;
-//   const OtpView({Key? key, required this.email}) : super(key: key);
+  @override
+  State<OtpVerificationPage> createState() => _OtpVerificationPageState();
+}
 
-//   @override
-//   State<OtpView> createState() => _OtpViewState();
-// }
+class _OtpVerificationPageState extends State<OtpVerificationPage> {
+  final _pinController = TextEditingController();
+  final FocusNode _pinFocusNode = FocusNode();
+  bool _hasNavigated = false;
 
-// class _OtpViewState extends State<OtpView> {
-//   final _formKey = GlobalKey<FormState>();
-//   final _otpController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_pinFocusNode);
+    });
+  }
 
-//   // وضعنا 300 ثانية = 5 دقائق
-//   int _resendCooldown = 0;
-//   Timer? _cooldownTimer;
+  @override
+  void dispose() {
+    _pinController.dispose();
+    _pinFocusNode.dispose();
+    super.dispose();
+  }
 
-//   @override
-//   void dispose() {
-//     _otpController.dispose();
-//     super.dispose();
-//   }
+  void _onVerify(BuildContext context) {
+    final code = _pinController.text.trim();
+    if (code.length == 6) {
+      BlocProvider.of<OtpCubit>(
+        context,
+      ).verifyOtp(OtpRequestModel(email: widget.email.trim(), code: code));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter all 6 digits"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // طلب إرسال OTP لمرة أولى
-//     context.read<OtpBloc>().add(RequestOtp(email: widget.email));
-//     _startResendCooldown();
-//   }
+  @override
+  Widget build(BuildContext context) {
+    final thirdWidth = MediaQuery.of(context).size.width / 3;
 
-//   void _resend() {
-//     if (_resendCooldown > 0) return;
-//     context.read<OtpBloc>().add(RequestOtp(email: widget.email));
-//     _startResendCooldown();
-//   }
+    final defaultPinTheme = PinTheme(
+      width: 50,
+      height: 55,
+      textStyle: AppTextStyle.style1.copyWith(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+    );
 
-//   void _startResendCooldown() {
-//     _cooldownTimer?.cancel();
-//     setState(() => _resendCooldown = 300);
-
-//     _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       if (_resendCooldown <= 1) {
-//         timer.cancel();
-//         setState(() => _resendCooldown = 0);
-//       } else {
-//         setState(() => _resendCooldown--);
-//       }
-//     });
-//   }
-
-//   void _submitOtp() {
-//     if (_formKey.currentState!.validate()) {
-//       context.read<OtpBloc>().add(
-//         VerifyOtp(email: widget.email, code: _otpController.text.trim()),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocListener<OtpBloc, OtpState>(
-//       listener: (context, state) {
-//         if (state is OtpSent) {
-//           ScaffoldMessenger.of(context).showSnackBar(
-//             SnackBar(content: Text(' تم إرسال الرمز إلى ${widget.email}')),
-//           );
-//         }
-//         if (state is OtpVerified) {
-//           Navigator.pushReplacementNamed(context, Routes.login);
-//         }
-//         if (state is OtpFailure) {
-//           ScaffoldMessenger.of(
-//             context,
-//           ).showSnackBar(SnackBar(content: Text(state.message)));
-//         }
-//       },
-//       child: Scaffold(
-//         appBar: AppBar(
-//           title: const Text('التحقق من الرمز'),
-//           centerTitle: true,
-//           leading: BackButton(
-//             onPressed:
-//                 () => Navigator.popAndPushNamed(context, Routes.register),
-//           ),
-//         ),
-//         body: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 'أدخل الرمز المكون من 6 أرقام\nالمرسل إلى ${widget.email} :',
-//                 style: Theme.of(context).textTheme.bodyLarge,
-//               ),
-//               const SizedBox(height: 4),
-//               Text(
-//                 widget.email,
-//                 style: Theme.of(
-//                   context,
-//                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-//               ),
-
-//               const SizedBox(height: 24),
-//               Form(
-//                 key: _formKey,
-//                 child: TextFormField(
-//                   controller: _otpController,
-//                   keyboardType: TextInputType.number,
-//                   textAlign: TextAlign.center,
-//                   maxLength: 6,
-//                   decoration: InputDecoration(
-//                     counterText: '',
-//                     filled: true,
-//                     fillColor: Colors.green.shade50,
-//                     hintText: '••••••',
-//                     hintStyle: TextStyle(letterSpacing: 16, color: Colors.grey),
-//                     border: OutlineInputBorder(
-//                       borderRadius: BorderRadius.circular(12),
-//                     ),
-//                   ),
-//                   style: const TextStyle(letterSpacing: 16, fontSize: 20),
-//                   validator: (v) {
-//                     if (v == null || v.trim().length != 6) {
-//                       return 'الرجاء إدخال الرمز الصحيح';
-//                     }
-//                     return null;
-//                   },
-//                 ),
-//               ),
-
-//               const SizedBox(height: 32),
-//               CustomButton(
-//                 text: 'تأكيد الرمز',
-//                 function: _submitOtp,
-//                 background: Colors.green.shade600,
-//                 icon: Icons.lock_open,
-//               ),
-
-//               const SizedBox(height: 16),
-//               CustomButton(
-//                 text:
-//                     _resendCooldown == 0
-//                         ? 'طلب رمز جديد'
-//                         : 'أعدّ $_resendCooldown ثانية',
-//                 function: _resendCooldown == 0 ? _resend : () {},
-//                 background:
-//                     _resendCooldown == 0
-//                         ? Colors.green.shade600
-//                         : Colors.grey.shade400,
-//                 icon: Icons.refresh,
-//               ),
-
-//               const SizedBox(height: 24),
-//               Text(
-//                 'لم يصلك الرمز؟ انتظر 5 دقائق ثم حاول مرة أخرى.',
-//                 style: TextStyle(color: Colors.grey.shade600),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+    return BlocProvider(
+      create: (_) => OtpCubit(),
+      child: BlocListener<OtpCubit, OtpCubitState>(
+        listener: (context, state) {
+          if (!_hasNavigated) {
+            if (state is OtpSuccess) {
+              if (state.isVerified) {
+                _hasNavigated = true;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("OTP Verified Successfully!"),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => LoginPage()),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("OTP has been resent!"),
+                    backgroundColor: Colors.blue,
+                  ),
+                );
+              }
+            } else if (state is OtpFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        },
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.accent, AppColors.secondary],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 40,
+                  horizontal: 24,
+                ),
+                child: Center(
+                  child: Card(
+                    elevation: 8,
+                    shadowColor: Colors.black26,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.lock_outline,
+                            size: 60,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "OTP Verification",
+                            style: AppTextStyle.style1.copyWith(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Enter the 6-digit code sent to your email",
+                            textAlign: TextAlign.center,
+                            style: AppTextStyle.style1.copyWith(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Pinput(
+                            length: 6,
+                            controller: _pinController,
+                            focusNode: _pinFocusNode,
+                            autofocus: true,
+                            defaultPinTheme: defaultPinTheme,
+                            focusedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                border: Border.all(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.2),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            submittedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                color: Colors.grey.shade100,
+                              ),
+                            ),
+                            separatorBuilder: (_) => const SizedBox(width: 12),
+                            showCursor: true,
+                          ),
+                          const SizedBox(height: 28),
+                          BlocBuilder<OtpCubit, OtpCubitState>(
+                            builder: (context, state) {
+                              if (state is OtpLoading) {
+                                return const CircularProgressIndicator();
+                              }
+                              return CustomButton(
+                                text: "Verify",
+                                width: thirdWidth,
+                                function: () => _onVerify(context),
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Didn't receive the code?"),
+                              const SizedBox(width: 8),
+                              BlocBuilder<OtpCubit, OtpCubitState>(
+                                builder: (context, state) {
+                                  bool isLoading = state is OtpLoading;
+                                  return ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.buttonPrimary,
+                                      foregroundColor: Colors.white,
+                                      elevation: 2,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 20,
+                                        vertical: 8,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      textStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    onPressed: isLoading
+                                        ? null
+                                        : () {
+                                            BlocProvider.of<OtpCubit>(
+                                              context,
+                                            ).resendOtp(widget.email.trim());
+                                          },
+                                    child: isLoading
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text("Resend"),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

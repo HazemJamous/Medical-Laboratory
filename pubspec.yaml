@@ -49,6 +49,7 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   permission_handler: 12.0.1
   file_selector: 1.0.3
+  pinput: ^4.0.0
   
 
 dev_dependencies:
