@@ -27,8 +27,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _healthController = TextEditingController();
 
-  String? _gender;
+  String? _gender = 'male';
   bool _navigated = false;
 
   @override
@@ -40,6 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _healthController.dispose();
     super.dispose();
   }
 
@@ -52,7 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
       lastDate: now,
     );
     if (picked != null) {
-      _dobController.text = DateFormat.yMd().format(picked);
+      _dobController.text = DateFormat('yyyy-MM-dd').format(picked);
+      print(_dobController.text);
     }
   }
 
@@ -206,6 +209,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                         ),
                                       ),
                                     ),
+
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: NameFormField(
@@ -222,6 +226,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(width: 16),
+                                NameFormField(
+                                  label: "smoking, drugs or diseases",
+                                  controller: _healthController,
+                                  type: TextInputType.text,
+                                  validator: (v) => (v?.isEmpty ?? true)
+                                      ? "Enter smoking, drugs or diseases"
+                                      : null,
                                 ),
                                 const SizedBox(height: 16),
                                 NameFormField(
@@ -278,6 +291,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                   },
                                 ),
                                 const SizedBox(height: 24),
+
+                                const SizedBox(height: 24),
                                 BlocBuilder<RegisterCubit, RegisterState>(
                                   builder: (context, state) {
                                     if (state is LoadingState) {
@@ -290,6 +305,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                         FocusScope.of(context).unfocus();
                                         if (_formKey.currentState!.validate()) {
                                           _navigated = false;
+                                          print("#############");
+                                          print(_dobController);
+                                          print("#############");
                                           BlocProvider.of<RegisterCubit>(
                                             context,
                                           ).register(
@@ -301,7 +319,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                                   .trim(),
                                               dob: _dobController.text.trim(),
                                               gender: _gender ?? '',
-                                              healthProblems: "Good Health",
+                                              healthProblems:
+                                                  _healthController.text,
                                               phone: _phoneController.text
                                                   .trim(),
                                               email: _emailController.text

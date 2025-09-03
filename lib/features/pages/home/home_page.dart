@@ -86,6 +86,8 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+                    HorizontalLabs(labDataService: home_cubit.labDataService),
+
                     // HorizontalLabs(),
                   ],
                 ),

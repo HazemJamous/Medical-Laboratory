@@ -85,9 +85,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     backgroundColor: Colors.green,
                   ),
                 );
-                Navigator.pushReplacement(
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (_) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false,
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
