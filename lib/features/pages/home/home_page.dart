@@ -180,7 +180,10 @@ class HomePage extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   onTap: () {
-                    // TODO: الانتقال للإعدادات
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
                   },
                 ),
                 ListTile(

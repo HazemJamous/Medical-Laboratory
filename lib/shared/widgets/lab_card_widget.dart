@@ -16,8 +16,8 @@ class LabCardWidget extends StatelessWidget {
     final double cardHeight = MediaQuery.of(context).size.height / 5;
 
     return InkWell(
+      borderRadius: BorderRadius.circular(18),
       onTap: () {
-        print('lab-----------');
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -27,80 +27,188 @@ class LabCardWidget extends StatelessWidget {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        height: cardHeight,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.secondary, Colors.white, AppColors.accentLight],
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-          ),
-          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
             ),
           ],
+          border: Border.all(
+            color: AppColors.secondary.withOpacity(0.3),
+            width: 1,
+          ),
         ),
-        height: cardHeight,
-        child: Row(
+        child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-              ),
-              child: CachedNetworkImage(
-                width: 120,
-                height: cardHeight,
-                fit: BoxFit.contain,
-                imageUrl: ApiLink.fileUrl(cardModel.imagePath),
-                // "https://beauty-station-back.bayanmasters.com/storage/services/e4Wb2qS1JQ55c0PFIfionHNKVImCIku7PuZAxDj0.jpg",
-                placeholder: (ctx, url) => Container(
-                  color: Colors.grey.shade200,
-                  child: const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2),
+            // لمسة زخرفية خفيفة بالخلفية (فقاعة لونية شفافة)
+            // Positioned(
+            //   right: -20,
+            //   bottom: -20,
+            //   child: Container(
+            //     width: 80,
+            //     height: 80,
+            //     decoration: BoxDecoration(
+            //       color: AppColors.accentLight.withOpacity(0.35),
+            //       shape: BoxShape.circle,
+            //     ),
+            //   ),
+            // ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // صورة المختبر مع إطار متدرّج و ظل ناعم
+                Container(
+                  width: 120,
+                  margin: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [AppColors.accent, AppColors.secondary],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accent.withOpacity(0.25),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(2), // يعطي إحساس "إطار"
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.white,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: CachedNetworkImage(
+                        fit: BoxFit.fill,
+                        imageUrl: ApiLink.fileUrl(cardModel.imagePath),
+                        placeholder: (ctx, url) => Container(
+                          color: Colors.grey.shade100,
+                          child: const Center(
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (ctx, url, err) => Container(
+                          color: Colors.grey.shade100,
+                          child: const Icon(
+                            Icons.broken_image_rounded,
+                            color: Colors.grey,
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                errorWidget: (ctx, url, err) => Container(
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.broken_image, color: Colors.grey),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 16,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      cardModel.labName,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.pageTitle,
-                      ),
+
+                // معلومات المختبر
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '${cardModel.location.city} • ${cardModel.location.address}',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 14,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // اسم المختبر + سهم تلميحي يمين
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                cardModel.labName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.pageTitle,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 14,
+                              color: AppColors.accentDark.withOpacity(0.7),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+
+                        // موقع المختبر (مدينة + عنوان) مع أيقونة
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 3),
+                              child: Icon(
+                                Icons.location_on_rounded,
+                                size: 16,
+                                color: AppColors.buttonPrimary,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                '${cardModel.location.city.cityName}\n${cardModel.location.address}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontSize: 13.2,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const Spacer(),
+
+                        // شريط تأثير سفلي خفيف (جمالية بصرية)
+                        Container(
+                          height: 6,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                AppColors.primary.withOpacity(0.18),
+                                AppColors.accent.withOpacity(0.18),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
+
+            // زر المفضلة المطفو أعلى يمين الكارد
+            Positioned(
+              bottom: 8,
+              right: 8,
               child: FavoriteWidget(
                 isFavorite: cardModel.isfavorite,
                 labId: cardModel.id,

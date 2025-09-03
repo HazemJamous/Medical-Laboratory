@@ -1,5 +1,5 @@
 abstract final class ApiLink {
-  static const baseUrl = "http://192.168.1.112:8000";
+  static const baseUrl = "http://192.168.1.8:8000";
   static const baseApiUrl = "$baseUrl/api";
   static const login = '$baseApiUrl/login';
   static const advertisementSearch = '$baseApiUrl/advertisementSearch';
@@ -15,6 +15,8 @@ abstract final class ApiLink {
   static const deleteAppointment = '$baseApiUrl/deleteAppointment';
   static const verifyEmail = '$baseApiUrl/verify-email';
   static const resendVerification = '$baseApiUrl/resend-verification';
+  static const PutDeleteFavoriteLabPatient =
+      '$baseApiUrl/patientPutDeleteFavoriteLab';
 
   // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
   // "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",
@@ -42,5 +44,9 @@ abstract final class ApiLink {
 
   static String fileUrlForDeleteAppointment(int id) {
     return '$deleteAppointment/$id';
+  }
+
+  static String fileUrlForPutDeleteFavoriteLabPatient(int id) {
+    return '$PutDeleteFavoriteLabPatient/$id';
   }
 }

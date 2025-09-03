@@ -113,12 +113,12 @@ class LabSearchService {
   }
 
   static Future<bool> putDeleteFavoriteLab(int id) async {
-    Dio dio = Dio();
+    Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String token = sharedPreferences.getString("token")!;
     try {
       Response response = await dio.post(
-        "${ApiLink.baseUrl}/patientPutDeleteFavoriteLab/$id",
+        ApiLink.fileUrlForPutDeleteFavoriteLabPatient(id),
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {

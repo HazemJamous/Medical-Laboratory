@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 
 import 'package:midical_laboratory/models/lap_information_model.dart';
-import 'package:midical_laboratory/shared/widgets/home_widgets/lab_card_widget.dart';
+import 'package:midical_laboratory/shared/widgets/home_widgets/lab_card_home_widget.dart';
 
 class HorizontalLabs extends StatelessWidget {
   final List<LabInformationModel> labDataService;
@@ -12,7 +12,7 @@ class HorizontalLabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 180,
+      height: 210,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -20,12 +20,14 @@ class HorizontalLabs extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (_, index) {
           final int labId = labDataService[index].id;
-          return LabCard(
-            title: labDataService[index].labName,
-            imageUrl: ApiLink.fileUrl(labDataService[index].imagePath),
-            cardHeight: 130,
-            labId: labId,
-            labName: labDataService[index].labName,
+          return LabCardHome(
+            labInfo: labDataService[index],
+
+            // title: labDataService[index].labName,
+            // imageUrl: ApiLink.fileUrl(labDataService[index].imagePath),
+            // cardHeight: 130,
+            // labId: labId,
+            // labName: labDataService[index].labName,
           );
         },
       ),
