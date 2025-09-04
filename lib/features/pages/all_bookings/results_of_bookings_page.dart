@@ -105,8 +105,8 @@ class ResultsOfBookingsPage extends StatelessWidget {
                         child: RefreshIndicator(
                           onRefresh: () async {
                             await context.read<ResultsCubit>().getResults(
-                                  booking.appointmentId,
-                                );
+                              booking.appointmentId,
+                            );
                           },
                           child: ListView.separated(
                             padding: const EdgeInsets.symmetric(
@@ -228,21 +228,21 @@ class ResultsOfBookingsPage extends StatelessWidget {
     }
 
     Widget _chip(String label, Color color) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(0.4)),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w700,
-              fontSize: 12,
-            ),
-          ),
-        );
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+        ),
+      ),
+    );
 
     showModalBottomSheet(
       context: context,
@@ -338,7 +338,9 @@ class ResultsOfBookingsPage extends StatelessWidget {
                         IconButton(
                           tooltip: 'نسخ القيمة',
                           onPressed: () {
-                            Clipboard.setData(ClipboardData(text: '$formattedValue$unit'));
+                            Clipboard.setData(
+                              ClipboardData(text: '$formattedValue$unit'),
+                            );
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('تم نسخ القيمة')),
                             );
@@ -380,7 +382,10 @@ class ResultsOfBookingsPage extends StatelessWidget {
                 // معلومات مرجعية سريعة
                 _infoGrid([
                   _InfoRow('النطاق المرجعي', refRange),
-                  _InfoRow('الوحدة', item.displayUnit.isEmpty ? '—' : item.displayUnit),
+                  _InfoRow(
+                    'الوحدة',
+                    item.displayUnit.isEmpty ? '—' : item.displayUnit,
+                  ),
                   if ((item.category ?? '').isNotEmpty)
                     _InfoRow('الفئة', item.category!),
                 ]),
@@ -388,7 +393,7 @@ class ResultsOfBookingsPage extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // تفاصيل تقنية
-                _sectionTitle('تفاصيل تقنية'),
+                // _sectionTitle('تفاصيل تقنية'),
                 _infoGrid([
                   if ((item.method ?? '').isNotEmpty)
                     _InfoRow('الطريقة', item.method!),
@@ -403,22 +408,36 @@ class ResultsOfBookingsPage extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // أوقات الإجراء
-                _sectionTitle('الأزمنة'),
+                // _sectionTitle('الأزمنة'),
                 _infoGrid([
-                  _InfoRow('وقت الجمع',
-                      item.collectedAt == null ? '—' : _formatDate(item.collectedAt!)),
-                  _InfoRow('وقت الاستلام',
-                      item.receivedAt == null ? '—' : _formatDate(item.receivedAt!)),
-                  _InfoRow('وقت الإصدار',
-                      item.reportedAt == null ? '—' : _formatDate(item.reportedAt!)),
+                  _InfoRow(
+                    'وقت الجمع',
+                    item.collectedAt == null
+                        ? '—'
+                        : _formatDate(item.collectedAt!),
+                  ),
+                  _InfoRow(
+                    'وقت الاستلام',
+                    item.receivedAt == null
+                        ? '—'
+                        : _formatDate(item.receivedAt!),
+                  ),
+                  _InfoRow(
+                    'وقت الإصدار',
+                    item.reportedAt == null
+                        ? '—'
+                        : _formatDate(item.reportedAt!),
+                  ),
                 ]),
 
                 const SizedBox(height: 10),
 
                 // بيانات المريض المرتبطة بالنتيجة (إن وُجدت)
-                if (item.patientAgeYears != null || (item.patientGender ?? '').isNotEmpty)
+                if (item.patientAgeYears != null ||
+                    (item.patientGender ?? '').isNotEmpty)
                   _sectionTitle('بيانات المريض'),
-                if (item.patientAgeYears != null || (item.patientGender ?? '').isNotEmpty)
+                if (item.patientAgeYears != null ||
+                    (item.patientGender ?? '').isNotEmpty)
                   _infoGrid([
                     if (item.patientAgeYears != null)
                       _InfoRow('العمر', '${item.patientAgeYears} سنة'),
@@ -439,7 +458,10 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     ),
                     child: Text(
                       item.notes!,
-                      style: TextStyle(fontSize: 13, color: Colors.grey.shade800),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade800,
+                      ),
                     ),
                   ),
 
@@ -453,19 +475,21 @@ class ResultsOfBookingsPage extends StatelessWidget {
   }
 
   Widget _sectionTitle(String t) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(
-          t,
-          style: const TextStyle(
-            fontSize: 14.5,
-            fontWeight: FontWeight.w800,
-            color: AppColors.pageTitle,
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      t,
+      style: const TextStyle(
+        fontSize: 14.5,
+        fontWeight: FontWeight.w800,
+        color: AppColors.pageTitle,
+      ),
+    ),
+  );
 
   Widget _infoGrid(List<_InfoRow> rows) {
-    final visible = rows.where((r) => r.value.trim().isNotEmpty && r.value != '—').toList();
+    final visible = rows
+        .where((r) => r.value.trim().isNotEmpty && r.value != '—')
+        .toList();
     if (visible.isEmpty) {
       // إن لم توجد معلومات لا نعرض شيئاً
       return const SizedBox.shrink();
@@ -493,32 +517,34 @@ class ResultsOfBookingsPage extends StatelessWidget {
             runSpacing: 10,
             spacing: 12,
             children: visible
-                .map((r) => SizedBox(
-                      width: (c.maxWidth - (col - 1) * 12) / col,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              r.label,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade700,
-                                fontWeight: FontWeight.w600,
-                              ),
+                .map(
+                  (r) => SizedBox(
+                    width: (c.maxWidth - (col - 1) * 12) / col,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            r.label,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Text(
-                            r.value,
-                            textAlign: TextAlign.end,
-                            style: const TextStyle(
-                              fontSize: 13.5,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.pageTitle,
-                            ),
+                        ),
+                        Text(
+                          r.value,
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.pageTitle,
                           ),
-                        ],
-                      ),
-                    ))
+                        ),
+                      ],
+                    ),
+                  ),
+                )
                 .toList(),
           );
         },

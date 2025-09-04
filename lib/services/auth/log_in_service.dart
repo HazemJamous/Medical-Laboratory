@@ -1,12 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
+import 'package:midical_laboratory/log_print_interceptor.dart';
 
 import 'package:midical_laboratory/models/login_request_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LogInService {
   static Future<String> login(LogInRequestModel user) async {
-    Dio dio = Dio();
+    Dio dio = Dio()..interceptors.add(LogPrintInterceptor());
     try {
       Response response = await dio.post(
         ApiLink.login,
