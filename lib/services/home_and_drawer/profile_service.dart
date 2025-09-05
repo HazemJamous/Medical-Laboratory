@@ -6,31 +6,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
   static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
-  static Future<List<ProfileModel>?> getMyprofile() async {
-    // لسا ما عملتله كيوبيت عمله انت
-    // انا باااااااااااسلللللللللل
+  static Future<ProfileModel?> getMyprofile() async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       String token = sharedPreferences.getString("token")!;
       Response response = await dio.get(
-        ApiLink.myBookings,
+        ApiLink.myProfile,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
-        List<ProfileModel> list = [];
-
-        for (var i = 0; i < (response.data['data'] as List).length; i++) {
-          ProfileModel card = ProfileModel.fromMap(response.data['data'][i]);
-          list.add(card);
-        }
-
-        return list;
+        ProfileModel profileModel = ProfileModel.fromMap(
+          response.data['data']['patient'],
+        );
+        return profileModel;
       } else {
+        print("in else statement");
         return null;
       }
     } catch (e) {
-      print("$e");
+      print("in catch: $e");
       return null;
     }
   }

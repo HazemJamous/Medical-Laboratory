@@ -205,7 +205,6 @@ class HomePage extends StatelessWidget {
                           ),
 
                           onTap: () {
-                            Navigator.pop(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(

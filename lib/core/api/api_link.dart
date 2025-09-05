@@ -18,6 +18,7 @@ abstract final class ApiLink {
   static const PutDeleteFavoriteLabPatient =
       '$baseApiUrl/patientPutDeleteFavoriteLab';
   static const getBalance = '$baseApiUrl/getBalance';
+  static const myProfile = '$baseApiUrl/getPatientInfo';
 
   // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
   // "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",

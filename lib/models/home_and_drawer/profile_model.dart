@@ -1,8 +1,5 @@
-// To parse this JSON data, do
-//
-//     final profileModel = profileModelFromMap(jsonString);
 
-import 'package:meta/meta.dart';
+
 import 'dart:convert';
 
 ProfileModel profileModelFromMap(String str) => ProfileModel.fromMap(json.decode(str));
@@ -10,29 +7,6 @@ ProfileModel profileModelFromMap(String str) => ProfileModel.fromMap(json.decode
 String profileModelToMap(ProfileModel data) => json.encode(data.toMap());
 
 class ProfileModel {
-    final Patient patient;
-
-    ProfileModel({
-        required this.patient,
-    });
-
-    ProfileModel copyWith({
-        Patient? patient,
-    }) => 
-        ProfileModel(
-            patient: patient ?? this.patient,
-        );
-
-    factory ProfileModel.fromMap(Map<String, dynamic> json) => ProfileModel(
-        patient: Patient.fromMap(json["patient"]),
-    );
-
-    Map<String, dynamic> toMap() => {
-        "patient": patient.toMap(),
-    };
-}
-
-class Patient {
     final int userId;
     final String firstName;
     final String lastName;
@@ -44,7 +18,7 @@ class Patient {
     final DateTime dob;
     final String healthProblems;
 
-    Patient({
+    ProfileModel({
         required this.userId,
         required this.firstName,
         required this.lastName,
@@ -57,7 +31,7 @@ class Patient {
         required this.healthProblems,
     });
 
-    Patient copyWith({
+    ProfileModel copyWith({
         int? userId,
         String? firstName,
         String? lastName,
@@ -69,7 +43,7 @@ class Patient {
         DateTime? dob,
         String? healthProblems,
     }) => 
-        Patient(
+        ProfileModel(
             userId: userId ?? this.userId,
             firstName: firstName ?? this.firstName,
             lastName: lastName ?? this.lastName,
@@ -82,7 +56,7 @@ class Patient {
             healthProblems: healthProblems ?? this.healthProblems,
         );
 
-    factory Patient.fromMap(Map<String, dynamic> json) => Patient(
+    factory ProfileModel.fromMap(Map<String, dynamic> json) => ProfileModel(
         userId: json["user_id"],
         firstName: json["first_name"],
         lastName: json["last_name"],
