@@ -17,6 +17,7 @@ abstract final class ApiLink {
   static const resendVerification = '$baseApiUrl/resend-verification';
   static const PutDeleteFavoriteLabPatient =
       '$baseApiUrl/patientPutDeleteFavoriteLab';
+  static const getBalance = '$baseApiUrl/getBalance';
 
   // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
   // "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",

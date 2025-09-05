@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/home/cubit/home_cubit.dart';
 import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
+import 'package:midical_laboratory/features/pages/home/drawer/profile_page.dart';
+import 'package:midical_laboratory/features/pages/home/drawer/settings_page.dart';
 import 'package:midical_laboratory/shared/widgets/home_widgets/appointment_button.dart';
 import 'package:midical_laboratory/shared/widgets/home_widgets/horizantall_labs.dart';
+import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -103,108 +106,210 @@ class HomePage extends StatelessWidget {
 
   // Drawer Widget
   Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.accent,
-                  AppColors.accentLight,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+    return SafeArea(
+      child: Drawer(
+        // نترك Drawer نفسه بلا لون لأننا نتحكم بلون الخلفية داخل العمود،
+        // لكن يمكن ضبطه هنا لو رغبت بلون عام.
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DrawerHeader(
+              margin: EdgeInsets.zero,
+              padding: EdgeInsets.zero,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.accent,
+                    AppColors.accentLight,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.biotech_rounded,
+                        color: AppColors.primary,
+                        size: 30,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "MatchLab",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "Connecting Patients with Labs",
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
+
+            // المساحة البيضاء للمحتوى (قوائم، أزرار الخ)
+            Expanded(
+              child: RTLWrapper(
+                child: Container(
+                  color: Colors.white, // <- هنا نؤمّن الخلفية البيضاء الصلبة
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          leading: const Icon(
+                            Icons.person,
+                            color: AppColors.primary,
+                          ),
+                          title: const Text(
+                            "الملف الشخصي",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePage(),
+                              ),
+                            );
+                          },
+                        ),
                       ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          leading: const Icon(
+                            Icons.settings,
+                            color: AppColors.primary,
+                          ),
+                          title: const Text(
+                            "الإعدادات",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SettingsPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          leading: const Icon(
+                            Icons.logout,
+                            color: AppColors.primary,
+                          ),
+                          title: const Text(
+                            "تسجيل خروج",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+                      // فاصل مرئي قبل محتويات إضافية
+                      const Divider(height: 1),
+                      const SizedBox(height: 8),
+
+                      // أمثلة لروابط أخرى / footer
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: RTLWrapper(
+                          child: Text(
+                            'سياسة الخصوصية',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // ضع هنا عناصر إضافية إن لزم
                     ],
                   ),
-                  child: const Icon(
-                    Icons.biotech_rounded,
-                    color: AppColors.primary,
-                    size: 30,
-                  ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  "MatchLab",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Connecting Patients with Labs",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.person, color: AppColors.primary),
-                  title: const Text(
-                    "الملف الشخصي",
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  onTap: () {
-                    // TODO: الانتقال للملف الشخصي
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings, color: AppColors.primary),
-                  title: const Text(
-                    "الإعدادات",
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.logout, color: AppColors.primary),
-                  title: const Text(
-                    "تسجيل خروج",
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

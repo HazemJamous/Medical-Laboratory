@@ -9,6 +9,10 @@ import 'package:midical_laboratory/shared/widgets/analyses/analyse_card.dart';
 import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 
+// IMPORT: خدمة الرصيد
+import 'package:midical_laboratory/services/analayse/analyses_service.dart';
+import 'package:midical_laboratory/models/booking_appointments/get_balance_model.dart';
+
 class AnalysesGridPage extends StatelessWidget {
   final int labId;
   final String labName;
@@ -87,7 +91,7 @@ class AnalysesGridPage extends StatelessWidget {
               }
             }
           } catch (_) {}
-          // try direct fields
+          // try direct fields: price / cost
           try {
             final v = dyn.price;
             if (v != null) {
@@ -115,23 +119,42 @@ class AnalysesGridPage extends StatelessWidget {
   }
 
   /// يعرض Dialog ملخص الأسعار ويطلب التأكيد. يعيد true إذا أكد المستخدم.
+  /// الآن: يعرض أيضاً رصيد المستخدم (getMyBalance) داخل نفس الديالوج،
+  /// ويتحقق عند الضغط على "متابعة الحجز" ما إذا كان الرصيد يكفي.
   Future<bool> _showConfirmationDialog(
     BuildContext context, {
     required List<dynamic> selectedItems,
     required double total,
   }) async {
-    // استخدم صيغة عملة واضحة مع $
-    final fmt = NumberFormat.currency(
-      locale: 'en_US',
-      symbol: '\$',
-      decimalDigits: 2,
-    );
+    // جلب الرصيد (محاولة آمنة)
+    GetBalanceModel? balanceModel;
+    try {
+      balanceModel = await AnalysesService.getMyBalance();
+    } catch (_) {
+      balanceModel = null;
+    }
+
+    // تنسيق الأرقام: سنعرض العدد ثنائي العلامات العشرية ونلحق رمز العملة إن وُجد
+    String currency = balanceModel?.currency ?? '';
+    String formatAmount(double v) {
+      final nf = NumberFormat('#,##0.00', 'en_US');
+      final s = nf.format(v);
+      if (currency.trim().isEmpty) return '\$ $s';
+      // إذا كان currency نصًا قصيرًا (مثل "USD" أو "د.أ") نلحقه يمين الرقم
+      return '$s $currency';
+    }
+
+    final double balanceAmount = (balanceModel?.total != null)
+        ? balanceModel!.total.toDouble()
+        : 0.0;
+    final bool balanceUnavailable = balanceModel == null;
 
     return await showDialog<bool>(
           context: context,
           barrierDismissible: false,
           builder: (ctx) {
             return Dialog(
+              backgroundColor: Colors.white,
               insetPadding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 20,
@@ -146,31 +169,7 @@ class AnalysesGridPage extends StatelessWidget {
                   padding: const EdgeInsets.all(18.0),
                   child: Column(
                     children: [
-                      // top area: icon (مطابق لمثال طلبك)، عنوان ووصف
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: Center(
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 10,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.biotech_rounded,
-                              color: AppColors.primary,
-                              size: 80,
-                            ),
-                          ),
-                        ),
-                      ),
+                      // header
                       const SizedBox(height: 8),
                       Text(
                         'ملخص التحاليل',
@@ -181,12 +180,9 @@ class AnalysesGridPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      const Text(
                         'راجع قائمة التحاليل والأسعار قبل المتابعة',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 13, color: Colors.black54),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
@@ -217,7 +213,6 @@ class AnalysesGridPage extends StatelessWidget {
                                 return Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    // small circular icon for each analysis (مظهر احترافي)
                                     Container(
                                       width: 44,
                                       height: 44,
@@ -257,9 +252,8 @@ class AnalysesGridPage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    // السعر مع رمز العملة $
                                     Text(
-                                      fmt.format(price),
+                                      formatAmount(price),
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
@@ -275,29 +269,76 @@ class AnalysesGridPage extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 12),
-                      // المجموع والخط الفاصل
                       Divider(color: Colors.grey.shade300, height: 1),
                       const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Text(
-                            'المجموع:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+
+                      // TOTAL row
+                      RTLWrapper(
+                        child: Row(
+                          children: [
+                            const Text(
+                              'المجموع:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(child: Container()),
-                          Text(
-                            fmt.format(total),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.accentDark,
+                            const SizedBox(width: 8),
+                            Expanded(child: Container()),
+                            Text(
+                              formatAmount(total),
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.pageTitle,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // BALANCE row
+                      RTLWrapper(
+                        child: Row(
+                          children: [
+                            const Text(
+                              'الرصيد:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(child: Container()),
+                            if (balanceUnavailable)
+                              Text(
+                                'غير متوفر',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey.shade700,
+                                ),
+                              )
+                            else
+                              Text(
+                                formatAmount(balanceAmount),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.pageTitle,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 14),
+                      const Text(
+                        'في حال كان رصيدك كافياً سيتم خصم المبلغ تلقائياً عند تأكيد الحجز.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
                       const SizedBox(height: 14),
 
@@ -325,7 +366,135 @@ class AnalysesGridPage extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () => Navigator.of(ctx).pop(true),
+                              onPressed: () async {
+                                // استعمل context الأصلي لإظهار SnackBar عند الحاجة
+                                if (balanceUnavailable) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'تعذّر جلب رصيدك، حاول لاحقاً',
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                if (balanceAmount < total) {
+                                  // عرض حوار "رصيد غير كافٍ" أبيض ومنسق
+                                  await showDialog<void>(
+                                    context: ctx,
+                                    barrierDismissible: true,
+                                    builder: (insCtx) => Dialog(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      insetPadding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 18,
+                                          vertical: 20,
+                                        ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red.shade50,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons
+                                                    .account_balance_wallet_outlined,
+                                                size: 40,
+                                                color: Colors.red.shade700,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 14),
+                                            const Text(
+                                              'رصيد غير كافٍ',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                            Text(
+                                              'رصيدك الحالي ${formatAmount(balanceAmount)} أقل من مجموع التحاليل ${formatAmount(total)}.\nالرجاء شحن حسابك لإتمام الحجز.',
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 18),
+                                            Row(
+                                              children: [
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      Navigator.of(
+                                                        insCtx,
+                                                      ).pop();
+                                                      // TODO: توجه المستخدم لصفحة الشحن إن وُجدت (مثلاً: Navigator.push(...))
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          Colors.red.shade700,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                      ),
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 12,
+                                                          ),
+                                                    ),
+                                                    child: const Text(
+                                                      'الغاء',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+
+                                  // أغلق الديالوج الرئيسي وأعد false (لا نتابع الحجز)
+                                  Navigator.of(ctx).pop(false);
+                                  return;
+                                }
+
+                                // الرصيد كافٍ: نخصم محليًا للعرض ونباشر (الخصم الحقيقي يجب أن يتم في السيرفر عند طلب الحجز)
+                                final double newBalance = balanceAmount - total;
+                                // نعلم المستخدم باختصار أن المبلغ خصم (عرض مرئي سريع)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'تم خصم ${formatAmount(total)} من رصيدك. الرصيد المتبقي ${formatAmount(newBalance)}',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+
+                                // أعد true لمتابعة الحجز (الخطوة التالية في الكود ستفتح bottom sheet لإكمال الحجز)
+                                Navigator.of(ctx).pop(true);
+                              },
                               icon: const Icon(
                                 Icons.arrow_forward,
                                 color: Colors.white,
@@ -383,9 +552,12 @@ class AnalysesGridPage extends StatelessWidget {
         cubit.getAllAnalysesById(labId);
 
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('تم الحجز بنجاح')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم الحجز بنجاح'),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
       }
       return;
@@ -406,7 +578,7 @@ class AnalysesGridPage extends StatelessWidget {
       total += _priceFromAnalysis(it);
     }
 
-    // Show confirmation dialog
+    // Show confirmation dialog (now includes balance check)
     final confirm = await _showConfirmationDialog(
       context,
       selectedItems: selectedItems,
@@ -414,7 +586,7 @@ class AnalysesGridPage extends StatelessWidget {
     );
 
     if (!confirm) {
-      // user canceled
+      // user canceled or balance insufficient
       return;
     }
 
@@ -431,9 +603,12 @@ class AnalysesGridPage extends StatelessWidget {
       cubit.getAllAnalysesById(labId);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('تم الحجز بنجاح')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم الحجز بنجاح'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
     }
   }
@@ -504,7 +679,7 @@ class AnalysesGridPage extends StatelessWidget {
                             function: () async => await openBookingSheet(
                               context,
                               labId,
-                              selectedIds: state.selectedIds, // ✅ تمرير الـ IDs
+                              selectedIds: state.selectedIds,
                             ),
                           ),
                         ),

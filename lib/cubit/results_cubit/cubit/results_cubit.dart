@@ -12,7 +12,9 @@ class ResultsCubit extends Cubit<ResultsState> {
   Future<void> getResults(int appointmentId) async {
     try {
       emit(ResultsLoading());
-      final results = await MyBookingsService.getResultsOfMyBookings(appointmentId);
+      final results = await MyBookingsService.getResultsOfMyBookings(
+        appointmentId,
+      );
       if (results != null && results.isNotEmpty) {
         emit(ResultsLoaded(results));
       } else {

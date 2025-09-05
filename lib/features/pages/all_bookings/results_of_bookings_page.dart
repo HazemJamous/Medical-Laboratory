@@ -8,6 +8,7 @@ import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.da
 import 'package:midical_laboratory/models/my_bookings_model/results_bookings_appointment_model.dart';
 import 'package:midical_laboratory/services/my_bookings/result_pdf_convert_service.dart';
 import 'package:midical_laboratory/shared/widgets/result_card.dart';
+import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 
 class ResultsOfBookingsPage extends StatelessWidget {
   final MyBokingsModel booking;
@@ -292,159 +293,157 @@ class ResultsOfBookingsPage extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+
+                // --- عرض اسم المريض و معرف التحليل بشكل واضح تحت العنوان (نفس تنسيق الشيب)
+                Row(
+                  children: [
+                    if (item.patientName.trim().isNotEmpty)
+                      _chip(item.patientName, Colors.blueGrey.shade700),
+                    const SizedBox(width: 8),
+                    _chip('ID: ${item.analysisId}', Colors.grey.shade700),
+                    const Spacer(),
+                  ],
+                ),
+
                 const SizedBox(height: 14),
 
                 // القيمة الأساسية
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "القيمة",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.accent.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: AppColors.accent.withOpacity(0.18),
-                            ),
-                          ),
-                          child: Text(
-                            '$formattedValue$unit',
+                RTLWrapper(
+                  child: Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "القيمة",
                             style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.accent,
+                              fontSize: 14,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Column(
-                      children: [
-                        IconButton(
-                          tooltip: 'نسخ القيمة',
-                          onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(text: '$formattedValue$unit'),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('تم نسخ القيمة')),
-                            );
-                          },
-                          icon: Icon(Icons.copy, color: AppColors.accent),
-                        ),
-                        const SizedBox(height: 6),
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.share),
-                          label: const Text('مشاركة'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.accent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.accent.withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppColors.accent.withOpacity(0.18),
+                              ),
+                            ),
+                            child: Text(
+                              '$formattedValue$unit',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.accent,
+                              ),
                             ),
                           ),
-                          onPressed: () {
-                            Clipboard.setData(
-                              ClipboardData(
-                                text:
-                                    '${item.analysisName}: $formattedValue$unit • النطاق: $refRange',
+                        ],
+                      ),
+                      const Spacer(),
+                      Column(
+                        children: [
+                          // IconButton(
+                          //   tooltip: 'نسخ القيمة',
+                          //   onPressed: () {
+                          //     Clipboard.setData(
+                          //       ClipboardData(text: '$formattedValue$unit'),
+                          //     );
+                          //     ScaffoldMessenger.of(context).showSnackBar(
+                          //       const SnackBar(content: Text('تم نسخ القيمة')),
+                          //     );
+                          //   },
+                          //   icon: Icon(Icons.copy, color: AppColors.accent),
+                          // ),
+                          const SizedBox(height: 6),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.copy, color: Colors.white),
+                            label: const Text(
+                              'نسخ التفاصيل',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.accent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('تم نسخ التفاصيل للمشاركة'),
-                              ),
-                            );
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+                            ),
+                            onPressed: () {
+                              Clipboard.setData(
+                                ClipboardData(
+                                  text:
+                                      '${item.analysisName}: $formattedValue$unit • النطاق: $refRange',
+                                ),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('تم نسخ التفاصيل للمشاركة'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 18),
 
+                // --- معلومات عامة/إضافية (تُعرض بنفس تنسيق _infoGrid)
+                // _sectionTitle('معلومات إضافية'),
+                RTLWrapper(
+                  child: _infoGrid([
+                    _InfoRow('اسم المريض', item.patientName),
+                    _InfoRow('معرف التحليل', item.analysisId.toString()),
+                    _InfoRow('حالة نسبة التحليل', item.status ?? '—'),
+                    _InfoRow(
+                      'وحدة المصدر',
+                      (item.unit == null || item.unit!.isEmpty)
+                          ? '—'
+                          : item.unit!,
+                    ),
+                  ]),
+                ),
+
+                const SizedBox(height: 10),
+
                 // معلومات مرجعية سريعة
-                _infoGrid([
-                  _InfoRow('النطاق المرجعي', refRange),
-                  _InfoRow(
-                    'الوحدة',
-                    item.displayUnit.isEmpty ? '—' : item.displayUnit,
-                  ),
-                  if ((item.category ?? '').isNotEmpty)
-                    _InfoRow('الفئة', item.category!),
-                ]),
-
-                const SizedBox(height: 10),
-
-                // تفاصيل تقنية
-                // _sectionTitle('تفاصيل تقنية'),
-                _infoGrid([
-                  if ((item.method ?? '').isNotEmpty)
-                    _InfoRow('الطريقة', item.method!),
-                  if ((item.specimen ?? '').isNotEmpty)
-                    _InfoRow('نوع العينة', item.specimen!),
-                  if ((item.device ?? '').isNotEmpty)
-                    _InfoRow('الجهاز', item.device!),
-                  if ((item.technician ?? '').isNotEmpty)
-                    _InfoRow('المسؤول', item.technician!),
-                ]),
-
-                const SizedBox(height: 10),
-
-                // أوقات الإجراء
-                // _sectionTitle('الأزمنة'),
-                _infoGrid([
-                  _InfoRow(
-                    'وقت الجمع',
-                    item.collectedAt == null
-                        ? '—'
-                        : _formatDate(item.collectedAt!),
-                  ),
-                  _InfoRow(
-                    'وقت الاستلام',
-                    item.receivedAt == null
-                        ? '—'
-                        : _formatDate(item.receivedAt!),
-                  ),
-                  _InfoRow(
-                    'وقت الإصدار',
-                    item.reportedAt == null
-                        ? '—'
-                        : _formatDate(item.reportedAt!),
-                  ),
-                ]),
+                RTLWrapper(
+                  child: _infoGrid([
+                    _InfoRow('النطاق المرجعي', refRange),
+                    _InfoRow(
+                      'الوحدة',
+                      item.displayUnit.isEmpty ? '—' : item.displayUnit,
+                    ),
+                    if ((item.category ?? '').isNotEmpty)
+                      _InfoRow('الفئة', item.category!),
+                  ]),
+                ),
 
                 const SizedBox(height: 10),
 
                 // بيانات المريض المرتبطة بالنتيجة (إن وُجدت)
-                if (item.patientAgeYears != null ||
-                    (item.patientGender ?? '').isNotEmpty)
-                  _sectionTitle('بيانات المريض'),
-                if (item.patientAgeYears != null ||
-                    (item.patientGender ?? '').isNotEmpty)
-                  _infoGrid([
-                    if (item.patientAgeYears != null)
-                      _InfoRow('العمر', '${item.patientAgeYears} سنة'),
-                    if ((item.patientGender ?? '').isNotEmpty)
-                      _InfoRow('الجنس', item.patientGender!),
-                  ]),
-
+                // if (item.patientAgeYears != null ||
+                //     (item.patientGender ?? '').isNotEmpty)
+                //   _sectionTitle('بيانات المريض'),
+                // if (item.patientAgeYears != null ||
+                //     (item.patientGender ?? '').isNotEmpty)
+                //   _infoGrid([
+                //     if (item.patientAgeYears != null)
+                //       _InfoRow('العمر', '${item.patientAgeYears} سنة'),
+                //     if ((item.patientGender ?? '').isNotEmpty)
+                //       _InfoRow('الجنس', item.patientGender!),
+                //   ]),
                 // ملاحظات
                 if ((item.notes ?? '').isNotEmpty) const SizedBox(height: 10),
                 if ((item.notes ?? '').isNotEmpty)

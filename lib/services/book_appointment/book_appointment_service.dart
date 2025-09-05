@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
+import 'package:midical_laboratory/models/booking_appointments/get_balance_model.dart';
 import 'package:midical_laboratory/models/booking_appointments/request_booking_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,7 +18,7 @@ class BookAppointmentService {
 
       final headers = {
         'Authorization': 'Bearer $token',
-        'Accept': 'application/json', // ✅ مهم للـ Laravel/Sanctum
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       };
 
@@ -29,8 +30,8 @@ class BookAppointmentService {
         data: data,
         options: Options(
           headers: headers,
-          followRedirects: false, // ✅ لا تتبع 302
-          validateStatus: (_) => true, // نفحص يدوياً
+          followRedirects: false,
+          validateStatus: (_) => true,
         ),
       );
 
@@ -45,15 +46,14 @@ class BookAppointmentService {
           return false;
         }
       } else if (sc == 302) {
-        // print("Redirect detected (302). Likely invalid token or unauthenticated.");
         return false;
       } else {
-        // print("BookAppointment HTTP $sc | ${response.data}");
         return false;
       }
     } catch (e) {
-      // print("Appointment Error: $e");
       return false;
     }
   }
+
+ 
 }

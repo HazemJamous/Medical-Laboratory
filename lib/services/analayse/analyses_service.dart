@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
+import 'package:midical_laboratory/models/booking_appointments/get_balance_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class   AnalysesService {
    static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
@@ -30,6 +31,28 @@ class   AnalysesService {
         }
 
         return list;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("$e");
+      return null;
+    }
+  }
+  //  static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
+  static Future<GetBalanceModel?> getMyBalance() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String token = sharedPreferences.getString("token")!;
+      Response response = await dio.get(
+        ApiLink.getBalance,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      if (response.statusCode == 200) {
+        GetBalanceModel card = GetBalanceModel.fromMap(response.data['data']);
+
+        return card;
       } else {
         return null;
       }
