@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "423681381424",
+    "project_id": "project2-22b48",
+    "storage_bucket": "project2-22b48.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423681381424:android:afb5b61a8b12887d8509f5",
+        "android_client_info": {
+          "package_name": "com.example.midical_laboratory"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWFIxeO0j5Pf-1tfMtPnZWDMi-U9IALqQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
