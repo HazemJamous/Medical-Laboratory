@@ -96,7 +96,7 @@ class DetailsLabPage extends StatelessWidget {
                     imageUrl: ApiLink.fileUrl(model.imagePath),
                     height: 180,
                     width: double.infinity,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.contain,
                     placeholder: (_, __) => Container(
                       height: 180,
                       color: Colors.grey.shade200,

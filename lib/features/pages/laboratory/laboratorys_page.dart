@@ -20,7 +20,9 @@ class _LabsPageState extends State<LabsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<LabSearchCubit>().getLabs(null, filterOptions);
+    context.read<LabSearchCubit>().getLabs(null,
+     filterOptions
+    );
   }
 
   void _showFilterSheet() {
@@ -182,7 +184,9 @@ class _LabsPageState extends State<LabsPage> {
                       ),
                       onSubmitted: (_) => context
                           .read<LabSearchCubit>()
-                          .getLabs(searchController.text, filterOptions),
+                          .getLabs(searchController.text,
+                           filterOptions
+                           ),
                     ),
                   ),
                 ),

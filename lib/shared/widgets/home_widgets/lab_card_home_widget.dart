@@ -97,7 +97,7 @@ class _LabCardState extends State<LabCardHome> {
                                 imageUrl: imageUrl.isNotEmpty
                                     ? imageUrl
                                     : "https://via.placeholder.com/300x200.png?text=Lab",
-                                fit: BoxFit.fill,
+                                fit: BoxFit.contain,
                                 placeholder: (ctx, url) => Container(
                                   color: Colors.grey.shade100,
                                   child: const Center(

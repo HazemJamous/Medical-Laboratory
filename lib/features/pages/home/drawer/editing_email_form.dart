@@ -93,12 +93,10 @@ class _ChangeEmailFormState extends State<ChangeEmailForm> {
           BlocConsumer<UpdateEmailCubit, UpdateEmailState>(
             listener: (ctx, state) async {
               if (state is UpdateEmailSuccessState) {
-                // جلب البريد المؤقت من SharedPreferences
                 final prefs = await SharedPreferences.getInstance();
                 final pendingEmail =
                     prefs.getString('pending_email') ?? state.emailModel.email;
 
-                // ننتقل لصفحة OTP بطريقة تمنع الرجوع للخلف (pushReplacement)
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (_) => OtpVerificationPage(email: pendingEmail),
@@ -108,6 +106,7 @@ class _ChangeEmailFormState extends State<ChangeEmailForm> {
                 ScaffoldMessenger.of(widget.parentContext).showSnackBar(
                   SnackBar(
                     content: Text('أرسلنا كود التحقق إلى $pendingEmail'),
+                    backgroundColor: AppColors.buttonSecondary,
                   ),
                 );
               } else if (state is UpdateEmailFailureState) {
@@ -156,7 +155,7 @@ class _ChangeEmailFormState extends State<ChangeEmailForm> {
                               )
                             : const Text('إرسال وتحقق'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accentDark,
+                          backgroundColor: AppColors.accent,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
