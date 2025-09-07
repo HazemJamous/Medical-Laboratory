@@ -4,9 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/my_bookings_cubit/cubit/my_bookings_cubit.dart';
+import 'package:midical_laboratory/features/pages/analyses/analayses_page.dart';
+import 'package:midical_laboratory/features/pages/basic_page.dart';
 import 'package:midical_laboratory/shared/widgets/map_widget/map_show_widget.dart';
 import 'package:midical_laboratory/shared/widgets/my_bookings_card.dart';
 import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
+import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.dart';
+
+// تأكد أن المسار صحيح لهذا الملف في مشروعك
 
 class MyBookingsPage extends StatelessWidget {
   const MyBookingsPage({super.key});
@@ -65,6 +70,7 @@ class MyBookingsPage extends StatelessWidget {
                   return MyBookingsCard(
                     booking: booking,
                     onTap: () => _showBookingDetails(context, booking),
+                    onEdit: () => _onEditBooking(context, booking),
                     onDelete: () {
                       showDialog(
                         context: context,
@@ -108,6 +114,167 @@ class MyBookingsPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// --- دوال مساعدة لاستخراج labId وlabName بطريقة مرنة من كائن الحجز ---
+  int? _extractLabId(dynamic booking) {
+    try {
+      if (booking == null) return null;
+
+      // 1) حقل مباشر باسم labId
+      try {
+        final v = (booking as dynamic).labId;
+        if (v is int) return v;
+        if (v is String) {
+          final p = int.tryParse(v);
+          if (p != null) return p;
+        }
+      } catch (_) {}
+
+      // 2) حقل باسم lab_id
+      try {
+        final v = (booking as dynamic).lab_id;
+        if (v is int) return v;
+        if (v is String) {
+          final p = int.tryParse(v);
+          if (p != null) return p;
+        }
+      } catch (_) {}
+
+      // 3) داخل كائن lab: booking.lab.id أو booking.lab['id']
+      try {
+        final lab = (booking as dynamic).lab;
+        if (lab != null) {
+          if (lab is Map) {
+            final idVal = lab['id'] ?? lab['lab_id'] ?? lab['ID'];
+            if (idVal is int) return idVal;
+            if (idVal is String) {
+              final p = int.tryParse(idVal);
+              if (p != null) return p;
+            }
+          } else {
+            final idVal = lab.id;
+            if (idVal is int) return idVal;
+            if (idVal is String) {
+              final p = int.tryParse(idVal);
+              if (p != null) return p;
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 4) إذا كان booking نفسه Map: booking['lab_id'] أو booking['lab']['id']
+      try {
+        if (booking is Map) {
+          final v =
+              booking['lab_id'] ??
+              booking['labId'] ??
+              booking['lab'] ??
+              booking['lab_id'];
+          if (v is int) return v;
+          if (v is String) {
+            final p = int.tryParse(v);
+            if (p != null) return p;
+          }
+          if (v is Map) {
+            final idVal = v['id'] ?? v['ID'];
+            if (idVal is int) return idVal;
+            if (idVal is String) {
+              final p = int.tryParse(idVal);
+              if (p != null) return p;
+            }
+          }
+        }
+      } catch (_) {}
+
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String _extractLabName(dynamic booking) {
+    try {
+      if (booking == null) return '';
+      try {
+        final n = (booking as dynamic).labName;
+        if (n != null) return n.toString();
+      } catch (_) {}
+      try {
+        final n = (booking as dynamic).lab_name;
+        if (n != null) return n.toString();
+      } catch (_) {}
+      try {
+        final lab = (booking as dynamic).lab;
+        if (lab != null) {
+          if (lab is Map) {
+            final n = lab['name'] ?? lab['lab_name'] ?? lab['title'];
+            if (n != null) return n.toString();
+          } else {
+            final n = lab.name ?? lab.title;
+            if (n != null) return n.toString();
+          }
+        }
+      } catch (_) {}
+      if (booking is Map) {
+        final n = booking['labName'] ?? booking['lab_name'] ?? booking['lab'];
+        if (n != null) return n.toString();
+      }
+      return '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  /// عند الضغط على تعديل: محاولة استخراج labId ثم الانتقال لصفحة التحاليل.
+  Future<void> _onEditBooking(
+    BuildContext context,
+    MyBokingsModel booking,
+  ) async {
+    final int? labId = _extractLabId(booking);
+    final String labName = _extractLabName(booking);
+
+    if (labId == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'غير قادر على الحصول على معرف المختبر (labId) للحجز.',
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    // push AnalysesGridPage and wait for a result (true = edited successfully)
+    final bool? result = await Navigator.of(context).push<bool?>(
+      MaterialPageRoute(
+        builder: (_) => AnalysesGridPage(
+          labId: labId,
+          labName: labName.isNotEmpty ? labName : (booking.labName ?? ''),
+          existingBooking: booking,
+        ),
+      ),
+    );
+
+    if (!context.mounted) return;
+
+    if (result == true) {
+      // ✅ ضمان أن الـ navigation stack مستقر قبل pushAndRemoveUntil
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (_) => const BasicPage(
+            initialIndex: 3,
+            showSnackMessage: 'تم تعديل الموعد بنجاح',
+          ),
+        ),
+        (route) => false,
+      );
+    }
   }
 
   void _showBookingDetails(BuildContext context, booking) {

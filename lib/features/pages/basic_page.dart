@@ -1,3 +1,4 @@
+// lib/features/pages/basic/basic_page.dart  (أو الملف اللي فيه BasicPage)
 import 'package:flutter/material.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/features/pages/advertisment/advertisment_page.dart';
@@ -7,22 +8,48 @@ import 'package:midical_laboratory/features/pages/laboratory/laboratorys_page.da
 import 'package:midical_laboratory/features/pages/tests/my_tests_page.dart';
 
 class BasicPage extends StatefulWidget {
-  const BasicPage({super.key});
+  final int initialIndex;
+  final String? showSnackMessage; // optional message to show after navigation
+
+  const BasicPage({
+    super.key,
+    this.initialIndex = 0,
+    this.showSnackMessage,
+  });
 
   @override
   State<BasicPage> createState() => _BasicPageState();
 }
 
 class _BasicPageState extends State<BasicPage> {
-  int currentIndex = 0;
+  late int currentIndex;
 
-  final List<Widget> screens = [
+  final List<Widget> screens =  [
     HomePage(),
     LabsPage(),
     MyTestsPage(),
     MyBookingsPage(),
     AdvertismentPage(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = widget.initialIndex;
+
+    // Show snack after first frame if message provided
+    if (widget.showSnackMessage != null && widget.showSnackMessage!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(widget.showSnackMessage!),
+            backgroundColor: Colors.green,
+          ),
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

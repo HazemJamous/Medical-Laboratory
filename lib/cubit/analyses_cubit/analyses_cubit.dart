@@ -41,7 +41,7 @@ class AnalysesCubit extends Cubit<AnalysesState> {
   Future<void> getAllAnalysesById(int labId) async {
     emit(AnalysesLoading());
     allAnalysesById = await AnalysesService.getAllAnalyses(labId) ?? [];
-    emit(AnalysesLoaded());
+      emit(AnalysesLoaded());
   }
 
   /// استدعاء خدمة جلب رصيد المستخدم.

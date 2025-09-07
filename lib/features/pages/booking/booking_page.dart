@@ -1,3 +1,4 @@
+// lib/features/pages/booking/booking_bottom_sheet.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -13,12 +14,16 @@ import 'package:midical_laboratory/shared/widgets/custom_button.dart';
 import 'package:midical_laboratory/shared/widgets/custom_form_filed.dart';
 import 'package:midical_laboratory/shared/widgets/map_widget/map_picker_widget.dart';
 
+// Model of existing booking (for edit)
+import 'package:midical_laboratory/models/my_bookings_model/my_bookings_model.dart';
+
 class BookingBottomSheetWrapper {
   static Future<bool?> show(
     BuildContext context,
     int labId, {
     List<int>? selectedIds,
     AnalayseModel? analysis,
+    MyBokingsModel? existingBooking, // <-- جديد: تمرير الموعد الحالي إن وُجد (للتعديل)
   }) {
     return showModalBottomSheet<bool>(
       context: context,
@@ -37,6 +42,7 @@ class BookingBottomSheetWrapper {
             labId: labId,
             analysis: analysis,
             preSelectedIds: selectedIds,
+            existingBooking: existingBooking,
           ),
         );
       },
@@ -48,12 +54,14 @@ class BookingBottomSheet extends StatefulWidget {
   final AnalayseModel? analysis;
   final int labId;
   final List<int>? preSelectedIds;
+  final MyBokingsModel? existingBooking; // <-- جديد
 
   const BookingBottomSheet({
     Key? key,
     this.analysis,
     required this.labId,
     this.preSelectedIds,
+    this.existingBooking,
   }) : super(key: key);
 
   @override
@@ -72,11 +80,40 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
 
   List<int> selectedAnalysesIds = [];
 
+  DateTime? _existingRequestedDate; // لتحديد الـ date عند التحميل من الـ booking
+
   @override
   void initState() {
     super.initState();
-    if (widget.preSelectedIds != null) {
-      selectedAnalysesIds = List.from(widget.preSelectedIds!);
+
+    // إذا جايين من تعديل، عبّئ الحقول الأولية من existingBooking
+    if (widget.existingBooking != null) {
+      final b = widget.existingBooking!;
+      _patientName.text = b.patientName;
+      // _patientPhone.text = b.patientPhone ?? '';
+      _patientIdNumber.text = b.patientIdNumber ;
+      _existingRequestedDate = b.dateTime;
+
+      // إذا مرّرت preSelectedIds فسأستخدمها أولًا، وإلا أحاول استخراجها من booking
+      if (widget.preSelectedIds != null && widget.preSelectedIds!.isNotEmpty) {
+        selectedAnalysesIds = List.from(widget.preSelectedIds!);
+      } else {
+        selectedAnalysesIds = _extractAnalysisIdsFromBooking(b);
+      }
+
+      // إذا كان النوع موجودًا في البوكنج
+      if (b.bookingType != null && b.bookingType!.isNotEmpty) {
+        selectedType = b.bookingType;
+      }
+
+      // إحداثيات
+      if ((b.latitude ?? 0) != 0 && (b.longitude ?? 0) != 0) {
+        selectedLocation = LatLng(b.latitude ?? 0, b.longitude ?? 0);
+      }
+    } else {
+      if (widget.preSelectedIds != null) {
+        selectedAnalysesIds = List.from(widget.preSelectedIds!);
+      }
     }
   }
 
@@ -86,6 +123,39 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
     _patientPhone.dispose();
     _patientIdNumber.dispose();
     super.dispose();
+  }
+
+  List<int> _extractAnalysisIdsFromBooking(MyBokingsModel b) {
+    try {
+      final tests = (b.tests as List<dynamic>?) ?? [];
+      final ids = <int>[];
+      for (final t in tests) {
+        if (t == null) continue;
+        if (t is int) {
+          ids.add(t);
+        } else if (t is Map) {
+          final idVal = t['id'] ?? t['ID'] ?? t['analysis_id'];
+          if (idVal is int) ids.add(idVal);
+          else if (idVal is String) {
+            final p = int.tryParse(idVal);
+            if (p != null) ids.add(p);
+          }
+        } else {
+          // حاول الوصول للحقل id كـ dynamic
+          try {
+            final v = (t as dynamic).id;
+            if (v is int) ids.add(v);
+            else if (v is String) {
+              final p = int.tryParse(v);
+              if (p != null) ids.add(p);
+            }
+          } catch (_) {}
+        }
+      }
+      return ids;
+    } catch (_) {
+      return [];
+    }
   }
 
   void _submitBooking() {
@@ -182,8 +252,14 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
       latitude: selectedType == "IN_LAB" ? 0 : selectedLocation?.latitude ?? 0,
     );
 
-    // إرسال الطلب
-    context.read<BookAppointmentCubit>().submit(req);
+    // إرسال الطلب — إذا كنا في وضع تعديل، ننادي updateAppointment مع appointmentId
+    final bookCubit = context.read<BookAppointmentCubit>();
+    if (widget.existingBooking != null) {
+      final id = widget.existingBooking!.appointmentId;
+      bookCubit.updateAppointment(req, id);
+    } else {
+      bookCubit.submit(req);
+    }
   }
 
   String _formatDate(DateTime dt) =>
@@ -193,16 +269,21 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
   Widget build(BuildContext context) {
     return BlocConsumer<BookAppointmentCubit, BookAppointmentState>(
       listener: (context, state) {
-        if (state is BookAppointmentSuccess) {
+        // إذا نجح الحجز أو التحديث نغلق ونرجع true
+        if (state is BookAppointmentSuccess || state is BookAppointmentUpdateSuccess) {
           Navigator.of(context).pop(true);
         } else if (state is BookAppointmentFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is BookAppointmentUpdateFailure) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
       },
       builder: (context, bookingState) {
-        final isSubmitting = bookingState is BookAppointmentLoading;
+        final isSubmitting = bookingState is BookAppointmentLoading || bookingState is BookAppointmentUpdateLoading;
 
         return BlocBuilder<
           AvailibleAppointmentsCubit,
@@ -212,11 +293,30 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
             final availCubit = context.read<AvailibleAppointmentsCubit>();
             final availableDateTimes = availCubit.appointmentService;
 
+            // إذا كنا في وضع تعديل وحقل التاريخ الذي جاي من السيرفر موجود، حاول نلاقي نفس العنصر في قائمة التواريخ المتاحة
+            if (_existingRequestedDate != null) {
+              if (selectedDateTime == null && availableDateTimes.isNotEmpty) {
+                try {
+                  final candidate = availableDateTimes.firstWhere(
+                    (a) {
+                      final diff = a.dateTime.difference(_existingRequestedDate!).inMinutes.abs();
+                      return diff <= 5; // سماحة 5 دقائق
+                    },
+                    orElse: () => availableDateTimes.first,
+                  );
+                  selectedDateTime = candidate;
+                  selectedType = selectedDateTime!.typeOptions.isNotEmpty ? selectedDateTime!.typeOptions.first : selectedType;
+                } catch (_) {
+                  // ignore
+                }
+              }
+            }
+
             if (selectedDateTime == null && availableDateTimes.isNotEmpty) {
               selectedDateTime = availableDateTimes.first;
               selectedType = selectedDateTime!.typeOptions.isNotEmpty
                   ? selectedDateTime!.typeOptions.first
-                  : null;
+                  : selectedType;
             }
 
             return Container(
@@ -244,10 +344,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Center(
+                  Center(
                     child: Text(
-                      "حجز موعد",
-                      style: TextStyle(
+                      widget.existingBooking != null ? "تعديل الموعد" : "حجز موعد",
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -268,7 +368,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                       selectedDateTime = val;
                       selectedType = val?.typeOptions.isNotEmpty == true
                           ? val!.typeOptions.first
-                          : null;
+                          : selectedType;
                     }),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -316,11 +416,10 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                   // MapPicker إذا اختار المنزل
                   if (selectedType == "IN_HOME")
                     MapPickerWidget(
+                      // initialLocation: selectedLocation,
                       onLocationSelected: (LatLng point) {
                         selectedLocation = point;
-                        print(
-                          "تم اختيار الموقع: ${point.latitude}, ${point.longitude}",
-                        );
+                        setState(() {}); // لتحديث الواجهه لو حبيت
                       },
                     ),
                   const SizedBox(height: 16),
@@ -357,7 +456,7 @@ class _BookingBottomSheetState extends State<BookingBottomSheet> {
                         ),
                         const SizedBox(height: 24),
                         CustomButton(
-                          text: "حجز موعد",
+                          text: widget.existingBooking != null ? "حفظ التعديلات" : "حجز موعد",
                           function: isSubmitting ? null : _submitBooking,
                           isLoading: isSubmitting,
                         ),

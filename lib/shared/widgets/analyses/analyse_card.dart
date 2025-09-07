@@ -1,9 +1,9 @@
+// lib/shared/widgets/analyses/analyse_card.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/cubit/analyses_cubit/analyses_cubit.dart';
 import 'package:midical_laboratory/features/pages/booking/analysis_details_sheet.dart';
-import 'package:midical_laboratory/features/pages/booking/booking_sheet.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/shared/widgets/right_to_left.dart';
 
@@ -35,6 +35,7 @@ class AnalysisCard extends StatelessWidget {
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AnalysesCubit>();
@@ -44,111 +45,114 @@ class AnalysisCard extends StatelessWidget {
         final isSelectionMode = cubit.isSelectionMode;
         final isSelected = cubit.selectedIds.contains(analysis.id);
 
-        return InkWell(
-          onTap: () {
-            if (isSelectionMode) {
-              cubit.toggleSelect(analysis.id.toInt());
-            } else {
-              _showBookingBottomSheet(context);
-            }
-          },
-          onLongPress: () {
-            if (!isSelectionMode) {
-              cubit.toggleSelectionMode(true);
-              cubit.toggleSelect(analysis.id.toInt());
-            }
-          },
+        return Material(
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.accent.withOpacity(0.2)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: isSelected
-                  ? Border.all(color: AppColors.primary, width: 2)
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(14),
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: AppColors.accent,
-                          child: const Icon(
-                            Icons.biotech,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            labName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              color: AppColors.pageTitle,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {
+              if (isSelectionMode) {
+                cubit.toggleSelect(analysis.id.toInt());
+              } else {
+                _showBookingBottomSheet(context);
+              }
+            },
+            onLongPress: () {
+              if (!isSelectionMode) {
+                cubit.toggleSelectionMode(true);
+                cubit.toggleSelect(analysis.id.toInt());
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.accent.withOpacity(0.2)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: isSelected
+                    ? Border.all(color: AppColors.primary, width: 2)
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              padding: const EdgeInsets.all(14),
+              child: Stack(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: AppColors.accent,
+                            child: const Icon(
+                              Icons.biotech,
+                              color: Colors.white,
+                              size: 20,
                             ),
                           ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              labName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.pageTitle,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        analysis.labAnalysesName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13.5,
+                          color: AppColors.textColor,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      analysis.labAnalysesName,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13.5,
-                        color: AppColors.textColor,
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          Text(
+                            "${analysis.price.toStringAsFixed(0)} \$",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (isSelectionMode) const SizedBox(height: 8),
+                    ],
+                  ),
+
+                  // ✅ Checkbox في أسفل يمين
+                  if (isSelectionMode)
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Checkbox(
+                        value: isSelected,
+                        onChanged: (_) => cubit.toggleSelect(analysis.id.toInt()),
+                        activeColor: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Text(
-                          "${analysis.price.toStringAsFixed(0)} \$",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    // اختياري: فراغ بسيط أسفل المحتوى حتى ما يتقاطع مع الـ Checkbox
-                    if (isSelectionMode) const SizedBox(height: 8),
-                  ],
-                ),
-
-                // ✅ Checkbox في أسفل يمين
-                if (isSelectionMode)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Checkbox(
-                      value: isSelected,
-                      onChanged: (_) => cubit.toggleSelect(analysis.id.toInt()),
-                      activeColor: AppColors.primary,
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         );
