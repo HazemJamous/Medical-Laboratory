@@ -1,5 +1,5 @@
 abstract final class ApiLink {
-  static const baseUrl = "http://192.168.1.105:8000";
+  static const baseUrl = "http://10.143.87.216:8000";
   static const baseApiUrl = "$baseUrl/api";
   static const login = '$baseApiUrl/login';
   static const advertisementSearch = '$baseApiUrl/advertisementSearch';
@@ -20,6 +20,10 @@ abstract final class ApiLink {
   static const getBalance = '$baseApiUrl/getBalance';
   static const myProfile = '$baseApiUrl/getPatientInfo';
   static const updateAppointment = '$baseApiUrl/update-appointments';
+
+  static const updatePatientPassword = '$baseApiUrl/updatePatientPassword';
+  static const updatePatientEmail = '$baseApiUrl/updatePatientEmail';
+  static const updatePatient = '$baseApiUrl/updatePatient';
 
   // static const favoriteLabsForPatient = '$baseApiUrl/labSearchPatient?isfavorite=';
   // "${ApiLink.baseApiUrl}/labSearchPatientt?isfavorite=${filterOptions.isFavorite}",

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/core/constant/app_text_style.dart';
 import 'package:midical_laboratory/cubit/advertisment_cubit/advertisment_cubit.dart';
-import 'package:midical_laboratory/services/advertisment/advertisment_service.dart';
 import 'package:midical_laboratory/shared/widgets/advert_card.dart';
 import 'package:midical_laboratory/models/advertisment_model/advertisment_modle.dart';
 
@@ -32,8 +31,7 @@ class _AdvertismentPageState extends State<AdvertismentPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          AdvertismentCubit(AdvertismentService())..getAdvertismentCubit(),
+      create: (_) => AdvertismentCubit()..getAdvertismentCubit(),
       child: BlocBuilder<AdvertismentCubit, AdvertismentState>(
         builder: (context, state) {
           if (state is AdvertismentLoadingState) {

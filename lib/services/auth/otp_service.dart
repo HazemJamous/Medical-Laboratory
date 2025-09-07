@@ -5,7 +5,6 @@ import 'package:midical_laboratory/models/otp/otp_request_model.dart';
 import 'package:midical_laboratory/models/otp/otp_resend_request_model.dart';
 
 class OtpService {
-  /// Returns `true` if OTP is valid, otherwise `false`
   static Future<bool> otp(OtpRequestModel user) async {
     Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
     try {
@@ -27,7 +26,6 @@ class OtpService {
     }
   }
 
-  ////////////////////
   static Future<bool> otpResend(OtpResendRequestModel user) async {
     Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
     try {

@@ -5,19 +5,19 @@ MyBokingsModel myBokingsModelFromMap(String str) => MyBokingsModel.fromMap(json.
 String myBokingsModelToMap(MyBokingsModel data) => json.encode(data.toMap());
 
 class MyBokingsModel {
-    final int labId;
+     int? labId;
     final int appointmentId;
     final String labName;
     final DateTime dateTime;
     final String patientName;
     final String patientIdNumber;
-    final double longitude;
-    final double latitude;
+    final double? longitude;
+    final double? latitude;
     final List<Test> tests;
     final String bookingType;
 
     MyBokingsModel({
-        required this.labId,
+        this.labId,
         required this.appointmentId,
         required this.labName,
         required this.dateTime,

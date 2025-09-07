@@ -6,18 +6,15 @@ import 'package:midical_laboratory/services/advertisment/advertisment_service.da
 part 'advertisment_state.dart';
 
 class AdvertismentCubit extends Cubit<AdvertismentState> {
-  AdvertismentCubit(this._advertismentService)
-    : super(AdvertismentLoadingState());  
-
-  AdvertismentService _advertismentService;
+  AdvertismentCubit() : super(AdvertismentLoadingState());
 
   List<AdvertismentModel> advertService = [];
 
-  Future getAdvertismentCubit() async { 
+  Future getAdvertismentCubit() async {
     print("before loading");
     emit(AdvertismentLoadingState());
     print("before get");
-    advertService = await _advertismentService.getAdvertisment() ?? [];
+    advertService = await AdvertismentService.getAdvertisment() ?? [];
     print("after get");
     emit(AdvertismentLoadedState(advertService));
     print("after loaded");

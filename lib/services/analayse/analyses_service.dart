@@ -3,10 +3,12 @@ import 'package:midical_laboratory/core/api/api_link.dart';
 import 'package:midical_laboratory/log_print_interceptor.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 import 'package:midical_laboratory/models/booking_appointments/get_balance_model.dart';
+import 'package:midical_laboratory/models/detalisLabModel/detailes_lab_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-class   AnalysesService {
-   static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
- static Future<List<AnalayseModel>?> getAllAnalyses(int labId) async {
+
+class AnalysesService {
+  static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
+  static Future<List<AnalayseModel>?> getAllAnalyses(int labId) async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -39,8 +41,9 @@ class   AnalysesService {
       return null;
     }
   }
+
   //  static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
-  static Future<GetBalanceModel?> getMyBalance() async {
+  static Future<GetBalanceModel> getMyBalance() async {
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -54,6 +57,30 @@ class   AnalysesService {
 
         return card;
       } else {
+        return GetBalanceModel(currency: "USD", total: 0);
+      }
+    } catch (e) {
+      print("$e");
+      return GetBalanceModel(currency: "USD", total: 0);
+    }
+  }
+
+  static Future<DetalisLabModel?> getDetails(int labId) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String token = sharedPreferences.getString("token")!;
+      Response response = await dio.get(
+        ApiLink.fileUrlForAllAnalyses(labId),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      if (response.statusCode == 200) {
+        print(response.data['data']);
+        DetalisLabModel detalisLabModel = DetalisLabModel.fromMap(
+          response.data['data'],
+        );
+        return detalisLabModel;
+      } else {
         return null;
       }
     } catch (e) {
@@ -61,4 +88,4 @@ class   AnalysesService {
       return null;
     }
   }
-} 
+}

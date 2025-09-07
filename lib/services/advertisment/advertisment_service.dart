@@ -6,9 +6,9 @@ import 'package:midical_laboratory/models/advertisment_model/advertisment_modle.
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdvertismentService {
-  static Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
-
-  Future<List<AdvertismentModel>?> getAdvertisment() async {
+  static Future<List<AdvertismentModel>> getAdvertisment() async {
+    Dio dio = Dio()..interceptors.addAll([LogPrintInterceptor()]);
+    List<AdvertismentModel> list = [];
     try {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -18,13 +18,9 @@ class AdvertismentService {
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       if (response.statusCode == 200) {
-        List<AdvertismentModel> list = [];
-
-        print(response.data['data']['Advertisements']);
-
         for (
           var i = 0;
-          i < (response.data['data']['Advertisements'] as List).length;
+          i < (response.data['data']['Advertisements']).length;
           i++
         ) {
           AdvertismentModel card = AdvertismentModel.fromMap(
@@ -35,11 +31,11 @@ class AdvertismentService {
 
         return list;
       } else {
-        return null;
+        return list;
       }
     } catch (e) {
       print("$e");
-      return null;
+      return list;
     }
   }
 }

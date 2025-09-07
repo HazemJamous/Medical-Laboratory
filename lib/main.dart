@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:midical_laboratory/cubit/lab_search_cubit/lab_search_cubit.dart';
+import 'package:midical_laboratory/cubit/update_email_cubit/update_email_cubit.dart';
+import 'package:midical_laboratory/cubit/update_password_cubit/update_password_cubit.dart';
+import 'package:midical_laboratory/cubit/update_patient_cubit/update_patient_cubit.dart';
 import 'package:midical_laboratory/features/pages/auth/login/login_page.dart';
 
 // Firebase
@@ -108,6 +111,13 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<LabSearchCubit>(create: (_) => LabSearchCubit()),
+        BlocProvider<UpdatePatientCubit>(
+          create: (context) => UpdatePatientCubit(),
+        ),
+        BlocProvider<UpdateEmailCubit>(create: (context) => UpdateEmailCubit()),
+        BlocProvider<UpdatePasswordCubit>(
+          create: (context) => UpdatePasswordCubit(),
+        ),
       ],
       child: const MidicalLaboratoryApp(),
     ),

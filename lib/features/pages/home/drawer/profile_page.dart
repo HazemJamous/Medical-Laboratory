@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:midical_laboratory/core/constant/app_colors.dart';
-
 import 'package:midical_laboratory/cubit/profile/profile_cubit.dart';
 import 'package:midical_laboratory/cubit/profile/profile_state.dart';
+import 'package:midical_laboratory/features/pages/home/drawer/editing_email_form.dart';
+import 'package:midical_laboratory/features/pages/home/drawer/editing_password_form.dart';
+import 'package:midical_laboratory/features/pages/home/drawer/editing_patient_form.dart';
 import 'package:midical_laboratory/models/home_and_drawer/profile_model.dart';
+import 'package:midical_laboratory/models/home_and_drawer/update_patient_model.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   String _initials(ProfileModel p) =>
-      "${p.firstName.isNotEmpty ? p.firstName[0] : ''}${p.lastName.isNotEmpty ? p.lastName[0] : ''}".toUpperCase();
+      "${p.firstName.isNotEmpty ? p.firstName[0] : ''}${p.lastName.isNotEmpty ? p.lastName[0] : ''}"
+          .toUpperCase();
 
   String _fullName(ProfileModel p) => '${p.firstName} ${p.lastName}';
 
   int _age(DateTime dob) {
     final now = DateTime.now();
     int age = now.year - dob.year;
-    if (now.month < dob.month || (now.month == dob.month && now.day < dob.day)) {
+    if (now.month < dob.month ||
+        (now.month == dob.month && now.day < dob.day)) {
       age--;
     }
     return age;
@@ -28,8 +33,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ProfileCubit()..profile(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProfileCubit>(
+          create: (context) =>
+              ProfileCubit()..profile(), // هذا اللي طلبت تتركه كما هو
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
@@ -58,8 +68,10 @@ class ProfilePage extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('خطأ: ${state.errorMessege}',
-                          style: const TextStyle(color: Colors.red)),
+                      Text(
+                        'خطأ: ${state.errorMessege}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
                       const SizedBox(height: 12),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -121,10 +133,18 @@ class ProfilePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
+                          'Balance: ${state.balance.total} ${state.balance.currency}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
                           'ID: ${patient.patientId} • ${_age(patient.dob)} سنة',
                           style: const TextStyle(
                             color: Colors.white70,
-                            fontSize: 14,
+                            fontSize: 16,
                           ),
                         ),
                       ],
@@ -137,23 +157,27 @@ class ProfilePage extends StatelessWidget {
                     title: "معلومات الاتصال",
                     children: [
                       _InfoTile(
-                          icon: Icons.phone,
-                          title: 'الهاتف',
-                          value: patient.phone),
+                        icon: Icons.phone,
+                        title: 'الهاتف',
+                        value: patient.phone,
+                      ),
                       _InfoTile(
-                          icon: Icons.email,
-                          title: 'البريد الإلكتروني',
-                          value: patient.email.isEmpty
-                              ? 'غير متوفر'
-                              : patient.email),
+                        icon: Icons.email,
+                        title: 'البريد الإلكتروني',
+                        value: patient.email.isEmpty
+                            ? 'غير متوفر'
+                            : patient.email,
+                      ),
                       _InfoTile(
-                          icon: Icons.cake,
-                          title: 'تاريخ الميلاد',
-                          value: _formatDate(patient.dob)),
+                        icon: Icons.cake,
+                        title: 'تاريخ الميلاد',
+                        value: _formatDate(patient.dob),
+                      ),
                       _InfoTile(
-                          icon: Icons.person,
-                          title: 'الجنس',
-                          value: patient.gender.isEmpty ? '-' : patient.gender),
+                        icon: Icons.person,
+                        title: 'الجنس',
+                        value: patient.gender.isEmpty ? '-' : patient.gender,
+                      ),
                     ],
                   ),
 
@@ -164,8 +188,10 @@ class ProfilePage extends StatelessWidget {
                     title: "المشاكل الصحية",
                     children: [
                       if (patient.healthProblems.trim().isEmpty)
-                        const Text('لا توجد مشاكل صحية مسجلة',
-                            style: TextStyle(color: AppColors.textColor))
+                        const Text(
+                          'لا توجد مشاكل صحية مسجلة',
+                          style: TextStyle(color: AppColors.textColor),
+                        )
                       else
                         Wrap(
                           spacing: 8,
@@ -191,29 +217,47 @@ class ProfilePage extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // الأزرار الجديدة
                   _buildCard(
                     title: "إعدادات الحساب",
                     children: [
                       _ActionButton(
-                        icon: Icons.edit,
+                        icon: Icons.edit_document,
                         text: "تغيير البيانات",
                         color: AppColors.buttonPrimary,
-                        onPressed: () {},
+                        onPressed:
+                            ()
+                            // {},
+                            {
+                              showEditPatientBottomSheet(
+                                context,
+                                UpdatePatientModel(
+                                  firstName: state.profileModel.firstName,
+                                  lastName: state.profileModel.lastName,
+                                  phone: state.profileModel.phone,
+                                  gender: state.profileModel.gender,
+                                  dob: state.profileModel.dob,
+                                  healthProblems:
+                                      state.profileModel.healthProblems,
+                                ),
+                              );
+                            },
                       ),
                       const SizedBox(height: 12),
                       _ActionButton(
                         icon: Icons.switch_account,
                         text: "تغيير الحساب",
                         color: AppColors.accent,
-                        onPressed: () {},
+                        onPressed: () {
+                          final currentEmail = state.profileModel.email;
+                          showChangeEmailBottomSheet(context, currentEmail);
+                        },
                       ),
                       const SizedBox(height: 12),
                       _ActionButton(
                         icon: Icons.lock,
                         text: "تغيير كلمة السر",
-                        color: AppColors.accentDark,
-                        onPressed: () {},
+                        color: AppColors.heading,
+                        onPressed: () => showChangePasswordBottomSheet(context),
                       ),
                     ],
                   ),
@@ -238,12 +282,14 @@ class ProfilePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: AppColors.heading,
-                )),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: AppColors.heading,
+              ),
+            ),
             const SizedBox(height: 12),
             ...children,
           ],
@@ -253,7 +299,6 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-// بلا تغيير في اللوجيك
 class _InfoTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -281,15 +326,22 @@ class _InfoTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                        color: AppColors.heading)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: AppColors.heading,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(value,
-                    style: const TextStyle(
-                        color: AppColors.textColor, fontSize: 14)),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: AppColors.textColor,
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ),
@@ -318,10 +370,7 @@ class _ActionButton extends StatelessWidget {
       icon: Icon(icon, color: Colors.white),
       label: Text(
         text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 15,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
@@ -333,4 +382,76 @@ class _ActionButton extends StatelessWidget {
       onPressed: onPressed,
     );
   }
+}
+
+Future<void> showEditPatientBottomSheet(
+  BuildContext parentContext,
+  UpdatePatientModel patient,
+) {
+  return showModalBottomSheet(
+    context: parentContext,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, controller) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(parentContext).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+            ),
+            child: SingleChildScrollView(
+              controller: controller,
+              child: EditPatientForm(
+                patient: patient,
+                parentContext: parentContext, // مهم
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+Future<void> showChangePasswordBottomSheet(BuildContext parentContext) {
+  return showModalBottomSheet(
+    context: parentContext,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) {
+      return DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        minChildSize: 0.35,
+        maxChildSize: 0.85,
+        builder: (_, controller) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Theme.of(parentContext).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 16,
+            ),
+            child: SingleChildScrollView(
+              controller: controller,
+              child: ChangePasswordForm(parentContext: parentContext),
+            ),
+          );
+        },
+      );
+    },
+  );
 }

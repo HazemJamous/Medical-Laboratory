@@ -4,6 +4,7 @@ import 'package:midical_laboratory/core/constant/app_colors.dart';
 import 'package:midical_laboratory/features/pages/booking/booking_sheet.dart';
 import 'package:midical_laboratory/features/pages/evaluation_page/evaluation_page.dart';
 import 'package:midical_laboratory/features/pages/analyses/analayses_page.dart';
+import 'package:midical_laboratory/features/pages/tabs_options/details_lab_page.dart';
 import 'package:midical_laboratory/models/analayses_model/analayses_model.dart';
 
 class CategoryTabs extends StatelessWidget {
@@ -20,7 +21,7 @@ class CategoryTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80),
@@ -43,7 +44,7 @@ class CategoryTabs extends StatelessWidget {
             title: Text(
               "$labName",
               textAlign: TextAlign.center,
-              maxLines: 2,
+              maxLines: 3,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
@@ -58,18 +59,18 @@ class CategoryTabs extends StatelessWidget {
               unselectedLabelColor: Colors.white70,
               labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               tabs: [
+                Tab(text: 'التفاصيل'),
                 Tab(text: 'آراء المرضى'),
                 Tab(text: 'التحاليل'),
-                // Tab(text: 'الحجـوزات'),
               ],
             ),
           ),
         ),
         body: TabBarView(
           children: [
+            DetailsLabPage(labId: labId),
             ReviewsPage(labId: labId),
             AnalysesGridPage(labId: labId, labName: labName!),
-            // BookingBottomSheet(analysis: analysis, labId: labId),
           ],
         ),
       ),
